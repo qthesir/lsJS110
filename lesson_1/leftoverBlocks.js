@@ -124,7 +124,11 @@ function calculateLeftoverBlocks(totalBlocks) {
   while (layer ** 2 <= remainingBlocks) {
     remainingBlocks -= layer ** 2;
     layer += 1;
+    console.log({remainingBlocks}, {layer})
   }
 
   return remainingBlocks;
 }
+
+// Neat trick! If I put the {} around a layer in the console.log, it shows the variable name and its value. 
+// This is super useful. Called disambiguating I guess. 
