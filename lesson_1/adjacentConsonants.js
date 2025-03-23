@@ -55,29 +55,6 @@ consonants to the lowest. It then returns the sorted array.
 */
 
 // Examples and Test Cases
-const CONSONANTS = [
-  "b",
-  "c",
-  "d",
-  "f",
-  "g",
-  "h",
-  "j",
-  "k",
-  "l",
-  "m",
-  "n",
-  "p",
-  "q",
-  "r",
-  "s",
-  "t",
-  "v",
-  "w",
-  "x",
-  "y",
-  "z",
-];
 
 let list1 = ["aa", "baa", "ccaa", "dddaa"];
 console.log(sortStringsByConsonants(list1));
@@ -228,20 +205,18 @@ Algo: More specific:
 function sortStringsByConsonants(stringArr) {
   let stringObj = Object();
   let numConsonents;
-  let objKey
-  console.log(stringArr);
+  let objKey;
   for (let i = 0; i < stringArr.length; i++) {
-    console.log(i, stringArr.length, stringArr[i]);
     numConsonents = calculateMaxAdjacentConsonents(stringArr[i]);
-    console.log(stringArr[i]);
-    objKey = stringArr[i]
+    objKey = stringArr[i];
     stringObj[objKey] = numConsonents;
-    console.log(stringObj);
   }
-  console.log(stringObj);
+  let sortedObj = sortObj(stringObj);
+  return Object.keys(sortedObj);
 }
 
 function calculateMaxAdjacentConsonents(str) {
+  const CONSONANTS = "bcdfghjklmnpqrstvwxyz";
 
   let consonentArray = [];
   let consonentCount = 0;
@@ -264,6 +239,11 @@ function calculateMaxAdjacentConsonents(str) {
   return consonentCount;
 }
 
+function sortObj(obj) {
+  let sortedObj = Object.entries(obj).sort((a, b) => b[1] - a[1]);
+  return Object.fromEntries(sortedObj);
+}
+
 // Made a couple of changes to the logic. Instead of checking for a vowel or last char, I just did the consonantArray length check against
 // the consonentCount after the consonent had been added to the array, in the event the letter is in fact a consonent. If it is not a
 // consonent, I just set the array back to empty. There is also a guard clause, for when the letter is a space, in which case the loop
@@ -271,4 +251,14 @@ function calculateMaxAdjacentConsonents(str) {
 
 // Oof, also need to make sure that the lenth of the consonentArray is at least two, or else there are 0 adjacent consonents.
 
-// The reason that my loop kept messing up: Because the iterator i wasn't declared with let. Wow. That is effing unreal. 
+// The reason that my loop kept messing up: Because the iterator i wasn't declared with let. Wow. That is effing unreal. I actually don't
+// believe I had been doing that before, but that makes sense: if i was not declared, it is declared in the global scope, meaning it
+// was inhereted in the function.
+
+// The solution removed the spaces from the input string, which, for finding the adjacent consonents, 
+// was probably the right move. My conditional skip when a space is detected also works, but it is 
+// less elegant. 
+
+// Another interesting decision by the solution was to use the calculateAdjacentConsonents helper 
+// function directly in the sort function on the array, as opposed to creating an object first like 
+// I did. 
