@@ -94,3 +94,25 @@ console.log(isPalindromicNumber2(34543)); // true
 console.log(isPalindromicNumber2(123210)); // false
 console.log(isPalindromicNumber2(22)); // true
 console.log(isPalindromicNumber2(5)); // true
+
+// Further exploration: Suppose the number begins with 1 or more 0s. Is there a way to address this?
+
+console.log(isPalindromicNumber(0345430));
+
+// Ok, so what's happening is Javascript is interpreting that number as an octal literal. Which, instead
+// of base 10, its base 8. So, how exactly do we convert base 10 to base 8?
+// This actually seems like a pretty tricky problem to resolve. I mean, it will work, but it will be
+// a different number than the user expected. I don't know how you would detect if its base 8, or that
+// leading 0 was placed there, which you would need to do at minimum in order to handle it (e.g.
+// convert it back to its original value, since javascript seems to automatically evaluate the
+// octal literal). You could also transfer all inputs to a string. But even then, its still evaluating
+// to a different number in the string. Like, if you do String(012345), 012345 is evaluating to
+// 5349 first, then being converted to a string, so you end up with '5349'
+
+// Here's a function that will work, for converting the octal, if the function is passed into
+// a string:
+
+function convertOctal(str) {
+  let num = parseInt(str, 10);
+  return num;
+}
