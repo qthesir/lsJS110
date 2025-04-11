@@ -120,6 +120,12 @@ then try to simplify from there?
 If you're mutating the original array as part of your function, this is typically not a good idea. However,
 if the array is contained within the function (i.e. there is not an array passed by reference which you want
 to retain), and you are not changing the number of elements (just mutating the same ones) then it is typically 
-ok. If you were changing them, however, this can easily lead to errors
+ok. If you were changing them, however, this can easily lead to errors.
+
+There is one solution in the comments that uses a super slick version of the array destructuring argument.
+[arr[0], arr[arr.length -1]] = [arr[arr.length -1], arr[0]]. 
+
+
+
 
 */
