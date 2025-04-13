@@ -138,6 +138,16 @@ Could I somehow do the inverse of the log base 10 summation? Like, what would I 
 Other option is modulo, and then divide by the next largest digit and round down. This seems kind of 
 rough though. 
 
-How do you isolate a digit from a number in a specific spot? Fuck. 
+How do you isolate a digit from a number in a specific spot?
+
+Another way to have done it, as opposed to changing the modulo around and subtracting the value from the 
+number on each iteration, you could have done math.floor of the number / 10 each iteration. This would have 
+reduced the number by 10, going from the 1s place, to the 10s, to the 100s etc., until the number was equal 
+to 0. Very similar in flavor to what I did for my function, but more elegant. Much simpler. This operation
+could also be viewed as "chopping off" the rightmost number. That is its effect. 
+
+The other thing: I did not have to use an object. I could have just used an array, and then the values of the digits
+I collected would have just been the index. Duh. 
+
 
 */
