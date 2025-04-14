@@ -75,6 +75,10 @@ console.log(signedIntegerToString(4321) === "+4321");
 console.log(signedIntegerToString(-123) === "-123");
 console.log(signedIntegerToString(0) === "0");
 
+console.log(signedIntegerToString(-0) === "-0");
+
+console.log(signedIntegerToString(-0));
+
 function signedIntegerToString(int) {
   let sign;
   switch (Math.sign(int)) {
@@ -87,6 +91,10 @@ function signedIntegerToString(int) {
     default:
       sign = "";
       break;
+  }
+
+  if (sign === "" && 1 / int < 0) {
+    sign = "-";
   }
 
   int = Math.abs(int);
@@ -142,4 +150,8 @@ Got caught with the switch statement - need to include a break statement after
 each case, or else it will "fall through" to the last case, and, in this instance,
 I'm changing the value of sign with each fall through. 
 
+How to fix the negative 0 problem? 
+
+Could either check if 1 / 0 is less than 0 (-infinity), or could use Object.is(-0, -0),
+which would appropriately return the value.
 */
