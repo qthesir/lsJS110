@@ -105,6 +105,65 @@ console.log(dms(93.034773)); // 93°02'05"
 console.log(dms(0)); // 0°00'00"
 console.log(dms(360)); // 360°00'00" or 0°00'00"
 
+// Further Exploration
+
+function dms2(num) {
+  let convertedDegrees = convertToDegrees(num);
+  let [degrees, minutes, seconds] = calculateValues2(convertedDegrees);
+
+  if (minutes < 10) {
+    minutes = "0" + String(minutes);
+  }
+
+  if (seconds < 10) {
+    seconds = "0" + String(seconds);
+  }
+
+  let output = `${degrees}°${minutes}'${seconds}"`;
+
+  return output;
+}
+
+function calculateValues2(num) {
+  let degrees = Math.floor(num);
+  num = (num - degrees) * 60;
+  let minutes = Math.floor(num);
+  num = (num - minutes) * 60;
+  let seconds = Math.floor(num);
+  return [degrees, minutes, seconds];
+}
+
+function convertToDegrees(num) {
+  let degrees = (num / 360 - Math.floor(num / 360)) * 360;
+  if (degrees < 0) {
+    return 360 + degrees
+  }
+  return degrees
+}
+
+console.log(dms2(-1)); // 359°00'00"
+console.log(dms2(400)); // 40°00'00"
+console.log(dms2(-40)); // 320°00'00"
+console.log(dms2(-420)); // 300°00'00"
+console.log(dms2(332.334))
+
+/*
+Thinking through this... You could divide the number by 360 and get its increment. if its 360 thats 1,
+which would mean the absolute value would be ok to use. If its 700, then thats a little less than 2, say 
+1.95. You could remove the Math.floor of the number, and just use the floating point and multiply that by
+360. That would work for positive numbers. For negative numbers, hmmm... well, if you took the same approach,
+you would have the invert the value, since you're moving backwords, counting down from 360 to 0. So you 
+could just do 360 - (.98 * 360) to get the solution. 
+
+Algorithm
+- num / 360
+- num - Math.floor(num)
+- Degrees = 360 * num
+- if num < 0:
+  Degrees = 360 + Degrees
+- Return degrees
+
+*/
 /* 
 Notes
 
@@ -122,4 +181,6 @@ is 36 on the dot. Its the floating point math that messes that up. So... I think
 appear that we are rounding down here. 
 
 Nope, LS didn't mess up. That's the output. It should NOT be the output, but it is unfortunately. 
+
+The LS solution used a function "padZeroes" to 
 */
