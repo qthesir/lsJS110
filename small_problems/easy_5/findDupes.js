@@ -99,6 +99,9 @@ function findDup2(array) {
       return currentValue
     }
   }
+
+  return undefined 
+
 }
 
 function isDupe(currentIndex, array) {
@@ -110,6 +113,9 @@ function isDupe(currentIndex, array) {
       return true
     }
   }
+
+  return false 
+
 }
 
 // You can't just do array.includes() because you have to ignore the index currently being operated on
@@ -148,6 +154,9 @@ which elements it has or hasn't seen. To do this, the LS solution is to create a
 which elements have been "seen" already by the program. This, of course, takes up some memory, but this is a
 pretty good tradeoff given the amount of compute required from going from O(n) to O(n^2) complexity.
 
+Other thing that could reduce the complexity (think it would be n log(n) or something) is to only evaluate the
+numbers in front of the last number you checked. No need to go backwards - you've already compared the numbers 
+back there in previous iterations. So, for each iteration, you have n - 1 less checks to do. 
 */
 
 function findDup3(array) {
