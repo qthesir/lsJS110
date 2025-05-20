@@ -9,7 +9,7 @@ same number of elements.
 
 // Example
 
-interleave([1, 2, 3], ['a', 'b', 'c']);    // [1, "a", 2, "b", 3, "c"]
+interleave([1, 2, 3], ["a", "b", "c"]); // [1, "a", 2, "b", 3, "c"]
 
 /*
 PEDAC
@@ -54,20 +54,47 @@ Algorithm
 // Code with Intent
 
 function interleave(array1, array2) {
-  let output = []
+  let output = [];
 
-  for(let i= 0; i < array1.length; i++) {
-    output.push(array1[i])
-    output.push(array2[i])
+  for (let i = 0; i < array1.length; i++) {
+    output.push(array1[i]);
+    output.push(array2[i]);
   }
 
-  return output
+  return output;
+}
+
+function interleave2(array1, array2) {
+  return array1.reduce((acc, cv, index) => {
+    acc.push(cv, array2[index]);
+    return acc;
+  }, []);
+}
+
+function interleave3(array1, array2) {
+  let combinedNestedList = array1.map((ele, index) => {
+    return [ele, array2[index]];
+  });
+
+  return [].concat(...combinedNestedList);
+}
+
+function interleave4(array1, array2) {
+  let output = [];
+
+  array1.forEach((ele, index) => {
+    output.push(ele, array2[index]);
+  });
+
+  return output;
 }
 
 // Test Cases
 
-console.log(interleave([1, 2, 3], ['a', 'b', 'c']));    // [1, "a", 2, "b", 3, "c"]
-
+console.log(interleave([1, 2, 3], ["a", "b", "c"])); // [1, "a", 2, "b", 3, "c"]
+console.log(interleave2([1, 2, 3], ["a", "b", "c"])); // [1, "a", 2, "b", 3, "c"]
+console.log(interleave3([1, 2, 3], ["a", "b", "c"])); // [1, "a", 2, "b", 3, "c"]
+console.log(interleave4([1, 2, 3], ["a", "b", "c"])); // [1, "a", 2, "b", 3, "c"]
 
 /*
 
