@@ -72,11 +72,11 @@ function interleave2(array1, array2) {
 }
 
 function interleave3(array1, array2) {
-  let combinedNestedList = array1.map((ele, index) => {
-    return [ele, array2[index]];
-  });
-
-  return [].concat(...combinedNestedList);
+  return array1
+    .map((ele, index) => {
+      return [ele, array2[index]];
+    })
+    .flat();
 }
 
 function interleave4(array1, array2) {
