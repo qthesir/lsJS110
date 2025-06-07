@@ -117,3 +117,17 @@ console.log(afterMidnight("12:34") === 754);
 console.log(beforeMidnight("12:34") === 686);
 console.log(afterMidnight("24:00") === 0);
 console.log(beforeMidnight("24:00") === 0);
+
+/*
+According to the solution, and by my own examination, I could have simply used the afterMidnight function
+to provide the value that gets inverted in the beforeMidnight function.
+
+Although, what I'm still perplexed by is the 24 hour edge case scenario. I suppose using the modulo
+resolves that, although indirectly, because if the value equals exactly 1440, then it will evaluate to 
+0, which is the correct value. Then, you take the downstream edge case by checking to see if the inversion
+is equal to minutes per day, which means the return value of afterMidnight was 0, in which case, you would 
+need to adjust the value of beforeMidnight to 0 as well and not 1440 minutes. 
+
+DRY principle: Don't repeat yourself. If you use code multiple times, abstract it into its own function. 
+
+*/
