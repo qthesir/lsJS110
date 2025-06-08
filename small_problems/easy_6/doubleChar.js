@@ -45,7 +45,7 @@ the output array.
 // Code with intent
 
 const repeater = (string) => {
-  return string.split('').map(ele => ele + ele).join('')
+  return [...string].map(ele => ele + ele).join('')
 }
 
 const repeater2 = (string) => {
@@ -59,7 +59,7 @@ const repeater2 = (string) => {
 }
 
 const repeater3 = (string) => {
-  return string.split('').reduce((acc, cv) => {
+  return [...string].reduce((acc, cv) => {
     acc.push(cv + cv)
     return acc
   }, []).join('')
