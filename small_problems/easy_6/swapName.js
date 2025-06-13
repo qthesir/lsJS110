@@ -57,11 +57,17 @@ const swapName = (name) => {
 const swapName2 = (name) => {
   let nameArray = name.split(" ");
   let lastName = nameArray.pop();
-  let firstAndMiddleNames = nameArray.join(' ');
+  let firstAndMiddleNames = nameArray.join(" ");
   return `${lastName}, ${firstAndMiddleNames}`;
+};
+
+const swapName3 = (name) => {
+  let [lastName, ...firstNames] = name.split(" ").reverse();
+  return `${lastName}, ${firstNames.reverse().join(" ")}`;
 };
 
 // Examples
 
 console.log(swapName("Joe Roberts")); // "Roberts, Joe"
 console.log(swapName2("Karl Oskar Henriksson Ragvals")); // "Ragvals, Karl Oskar Henriksson"
+console.log(swapName3("Karl Oskar Henriksson Ragvals")); // "Ragvals, Karl Oskar Henriksson"
