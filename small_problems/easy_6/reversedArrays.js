@@ -67,10 +67,7 @@ const reverse = (array) => {
   let i = 0;
   let j = array.length - 1;
   while (i < j) {
-    let firstValue = array[i];
-    let lastValue = array[j];
-    array[i] = lastValue;
-    array[j] = firstValue;
+    [array[i], array[j]] = [array[j], array[i]];
     i++;
     j--;
   }
@@ -99,3 +96,6 @@ let list3 = [];
 let result3 = reverse(list3);
 console.log(result3); // logs []
 console.log(list3 === result3); // logs true
+
+// The LS solution uses slightly different conventions for this problem. It uses array destructuring in
+// order to reverse the positions [array[i], array[j]] = [array[j], array[i]]
