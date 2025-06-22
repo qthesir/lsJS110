@@ -104,14 +104,14 @@ const isCompletePair = (pair) => {
 
 // Examples
 
-console.log(isBalanced("What (is) this?") === true);
-console.log(isBalanced("What is) this?") === false);
-console.log(isBalanced("What (is this?") === false);
-console.log(isBalanced("((What) (is this))?") === true);
-console.log(isBalanced("((What)) (is this))?") === false);
-console.log(isBalanced("Hey!") === true);
-console.log(isBalanced(")Hey!(") === false);
-console.log(isBalanced("What ((is))) up(") === false);
+// console.log(isBalanced("What (is) this?") === true);
+// console.log(isBalanced("What is) this?") === false);
+// console.log(isBalanced("What (is this?") === false);
+// console.log(isBalanced("((What) (is this))?") === true);
+// console.log(isBalanced("((What)) (is this))?") === false);
+// console.log(isBalanced("Hey!") === true);
+// console.log(isBalanced(")Hey!(") === false);
+// console.log(isBalanced("What ((is))) up(") === false);
 
 /*
 Notes and reflection
@@ -177,3 +177,64 @@ function isBalancedLS(string) {
   }
   return parens === 0;
 }
+
+/*
+There are a few other characters that should be matching as well. Square brackets and curly brackets 
+normally come in pairs. Quotation marks(single and double) also typically come in pairs and should be 
+balanced. Can you expand this function to take into account those characters?
+*/
+
+const CHARACTERS_TO_BALANCE = [
+  ["(", ")"],
+  ['"'],
+  ["'"],
+  ["{", "}"],
+  ["[", "]"],
+];
+
+function isBalancedAllPairs(string) {
+  let balance = 0;
+  for (let characters of CHARACTERS_TO_BALANCE) {
+    if (characters.length === 1) {
+      let total_occurances = string.split("").reduce((acc, cv) => {
+        characters[0] === cv ? (acc += 1) : acc;
+        return acc;
+      }, 0);
+      balance += total_occurances % 2;
+      console.log({ characters, balance });
+    } else {
+      for (let idx = 0; idx < string.length; idx++) {
+        if (string[idx] === characters[0]) {
+          balance += 1;
+        } else if (string[idx] === characters[1]) {
+          balance -= 1;
+        }
+        if (balance < 0) return false;
+      }
+    }
+    if (balance !== 0) return false;
+  }
+  return balance === 0;
+}
+
+console.log(isBalancedAllPairs("What (is) 'this'?") === true);
+console.log(isBalancedAllPairs("What is) this?") === false);
+console.log(isBalancedAllPairs("What (is this?") === false);
+console.log(isBalancedAllPairs("{[((What) (is this))?]}") === true);
+console.log(isBalancedAllPairs("((What)) (is this))?") === false);
+console.log(isBalancedAllPairs("Hey!(]") === false);
+console.log(isBalancedAllPairs(")Hey!(") === false);
+console.log(isBalancedAllPairs("What ((is))) up(") === false);
+
+/*
+Ok, how do I take into account other types of characters? Should I check them all? Maybe the switch 
+statement would make sense here? Maybe a const with the set of values you want to check? 
+
+If the length of the sub-array is 1, then you are looking for an even number. If its 2, then you do 
+the balance check. 
+
+I am definitely spending too much time on this problem, but another way is to strip out all the irrelevant
+characters and evaluate that way. One limitation of the approach I have currently is that it does not 
+account for nesting. Are the items properly nested? Stripping out would make this easier to handle. However,
+I am not sure how to proceed from there - that is a complicated problem indeed. 
+*/
