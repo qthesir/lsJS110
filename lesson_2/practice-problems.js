@@ -548,3 +548,117 @@ deepCopyOfMunsters.herman.age = "f";
 console.log(munsters2);
 console.log(deepCopyOfMunsters);
 console.log(deepCopyOfMunsters2);
+
+// Practice Problem 20
+
+/*
+A UUID is a type of identifier often used to uniquely identify items, even when some of those items were 
+created on a different server or by a different application. That is, without any synchronization, 
+two or more computer systems can create new items and label them with a UUID with no significant 
+risk of stepping on each other's toes. It accomplishes this feat through massive randomization. 
+The number of possible UUID values is approximately 3.4 X 10E38, which is a huge number. 
+The chance of a conflict is vanishingly small with such a large number of possible values.
+
+Each UUID consists of 32 hexadecimal characters (the digits 0-9 and the letters a-f) represented as 
+a string. The value is typically broken into 5 sections in an 8-4-4-4-12 pattern, e.g., 
+'f65c57f6-a6aa-17a8-faa1-a67f2dc9fa91'.
+
+Write a function that takes no arguments and returns a string that contains a UUID.
+*/
+
+UUID_ALLOWABLE_CHARACTERS = [
+  "0",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+];
+UUID_NUMBER_OF_CHARACTERS = 32;
+
+const getUUID = () => {
+  // let uuidValues = [];
+  // for (let i = 0; i < UUID_NUMBER_OF_CHARACTERS; i++) {
+  //   const newCharIndex = Math.floor(
+  //     Math.random() * UUID_ALLOWABLE_CHARACTERS.length
+  //   );
+  //   const newChar = UUID_ALLOWABLE_CHARACTERS[newCharIndex];
+  //   uuidValues.push(newChar);
+  // }
+  uuidValues = [...Array(UUID_NUMBER_OF_CHARACTERS)].map((ele) => {
+    const newCharIndex = Math.floor(
+      Math.random() * UUID_ALLOWABLE_CHARACTERS.length
+    );
+    const newChar = UUID_ALLOWABLE_CHARACTERS[newCharIndex];
+    return newChar;
+  });
+
+  return createUUIDString(uuidValues);
+};
+
+const createUUIDString = (uuidValues) => {
+  const segment1 = uuidValues.slice(0, 8).join("");
+  const segment2 = uuidValues.slice(8, 12).join("");
+  const segment3 = uuidValues.slice(12, 16).join("");
+  const segment4 = uuidValues.slice(16, 20).join("");
+  const segment5 = uuidValues.slice(20, 32).join("");
+  return (
+    segment1 + "-" + segment2 + "-" + segment3 + "-" + segment4 + "-" + segment5
+  );
+};
+
+console.log(getUUID());
+
+/*
+Notes
+
+Ok... This actually seems relatively straightforward. Randomly select the character identifier (cant 
+remember the name of it) or just randomly select an index from a pre-defined array of the allowable 
+characters. Either one will do. Add this to an array up to 32 characters. Then, concat the first 8, with
+the next 4, with the next 4... etc with a hyphen. Then return the value to the user. 
+
+Launch school solution, as usual, is very elegant. Instead of creating the array and then concatenating,
+it included an additional "sections" array that the problem iterated through at the top level. At the end
+of each section, it added the hyphen. It constructed the string basically in the same loop as it was
+determining the characters.
+*/
+
+// Problem 21
+
+/*
+Identify the higher-order functions and callbacks in this code.
+*/
+
+function scream(message, helper) {
+  const shout = () => message.toUpperCase();
+
+  return helper(shout());
+}
+
+const exclamate = str => str + "!!!";
+
+const foo = ["heLp", "Boo", "arGH", "Oh no"];
+const FOO = foo.map(word => scream(word, exclamate));
+
+/*
+Helper is a callback function, while scream is a higher order function that takes the helper 
+callback as an argument. Shout, defined within scream, appears to be passed to helper - 
+but it's actually not. Shout is being called and the returned value is being passed to helper. Thus, 
+helper is not a higher ord3er function, just a callback. 
+
+Exclamate, which is called by scream, assumes the value of the helper parameter in the scream 
+function. Thus, exclamate is a callback function as well passed as an argument to scream. Map, 
+which is being called on the foo array, is a higher order function, or built in array method that takes
+a callback function as an argument. 
+
+*/  
