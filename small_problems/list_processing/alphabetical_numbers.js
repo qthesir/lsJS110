@@ -93,3 +93,29 @@ console.log(
   ])
 );
 // [8, 18, 11, 15, 5, 4, 14, 9, 19, 1, 7, 17, 6, 16, 10, 13, 3, 12, 2, 0]
+
+/*
+Notes & reflection
+
+The LS solution here is interesting. It defines the function wordsort as a separate function and passes 
+it as a callback to the sort function after the fact. This is the first time I've seen this. Here is the 
+function:
+*/
+
+function wordSort(num1, num2) {
+  if (NUMBER_TO_WORD[num1] > NUMBER_TO_WORD[num2]) {
+    return 1;
+  } else if (NUMBER_TO_WORD[num1] < NUMBER_TO_WORD[num2]) {
+    return -1;
+  } else {
+    return 0;
+  }
+}
+
+function alphabeticNumberSort2(array) {
+  return [...array].sort(wordSort);
+}
+
+// This also introduces an interesting way to structure code in JavaScript in general: You can separately
+// define the callback function passed into the array method. This, perhaps, makes the array methods
+// more readible. 
