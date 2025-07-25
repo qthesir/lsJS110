@@ -81,4 +81,11 @@ console.log(isUppercase2("")); // true
 Notes
 Can just apply uppercase to the character being evaluated with the every array method. 
 
+All we needed to do, actually, was compare the original string to uppercased string. .toUppercase() only 
+modifies alphabetic characters, and not characters that are not alphabetic. Therefore, we just have to 
+compare the string, not the individual letters in the string. My solution was overkill.
+
+I think this is Launch School's way of making sure we do not get sucked into any one given solution, or 
+get sucked into the pattern of practicing one type of way of approaching the problem. I'm kind of in the 
+habit of using array methods now, without considering why. Perhaps this is not ideal. 
 */

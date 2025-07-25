@@ -68,10 +68,20 @@ const removeVowels = (arrayOfStrings) => {
   });
 };
 
+const removeVowelsWithRegex = (arrayOfStrings) => {
+  return arrayOfStrings.map((string) => {
+    return string.replace(/[aeiou]/gi, "")
+  })
+}
+
 // Examples:
 
 console.log(removeVowels(["abcdefghijklmnopqrstuvwxyz"])); // ["bcdfghjklmnpqrstvwxyz"]
 console.log(removeVowels(["green", "YELLOW", "black", "white"])); // ["grn", "YLLW", "blck", "wht"]
 console.log(removeVowels(["ABC", "AEIOU", "XYZ"])); // ["BC", "", "XYZ"]
+
+console.log(removeVowelsWithRegex(["abcdefghijklmnopqrstuvwxyz"])); // ["bcdfghjklmnpqrstvwxyz"]
+console.log(removeVowelsWithRegex(["green", "YELLOW", "black", "white"])); // ["grn", "YLLW", "blck", "wht"]
+console.log(removeVowelsWithRegex(["ABC", "AEIOU", "XYZ"])); // ["BC", "", "XYZ"]
 
 // Thinking .map and then .filter for the strings

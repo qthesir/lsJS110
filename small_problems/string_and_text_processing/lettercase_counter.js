@@ -109,4 +109,6 @@ to see if its working probably for all the scenarios that you've already defined
 test driven development as well. Launch school is giving me the test cases right now, but presumably I will
 at some point be required to write my own. 
 
+I'm literally solving for the test cases. 
+
 */
