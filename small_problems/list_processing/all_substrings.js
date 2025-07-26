@@ -72,19 +72,23 @@ The main algorithm should put the substrings in the proper order.
 
 */
 
-const leadingSubstrings = (string) => {
+const trailingSubstrings = (string) => {
   return [...Array(string.length)].reduce((acc, _, index) => {
     acc.push(string.substring(index, string.length));
     return acc;
   }, []);
 };
 
+const leadingSubstrings = (str) => {
+  return [...Array(str.length)].map((_, index) => str.substring(0, index + 1));
+};
+
 const substrings = (string) => {
   let output = [];
-  let leadingSubstringArray = leadingSubstrings(string);
-  leadingSubstringArray.forEach((leadingSubstring) => {
-    leadingSubstring.split("").forEach((_, index) => {
-      output.push(leadingSubstring.substring(0, index + 1));
+  let trailingSubstringArray = trailingSubstrings(string);
+  trailingSubstringArray.forEach((trailingSubstring) => {
+    trailingSubstring.split("").forEach((_, index) => {
+      output.push(trailingSubstring.substring(0, index + 1));
     });
   });
 
@@ -92,11 +96,28 @@ const substrings = (string) => {
 };
 
 const substrings2 = (string) => {
-  let leadingSubstringArray = leadingSubstrings(string);
-  return leadingSubstringArray.reduce((acc, leadingSubstring) => {
-    leadingSubstring.split("").forEach((_, index) => {
-      acc.push(leadingSubstring.substring(0, index + 1));
+  let trailingSubstringArray = trailingSubstrings(string);
+  return trailingSubstringArray.reduce((acc, trailingSubstring) => {
+    trailingSubstring.split("").forEach((_, index) => {
+      acc.push(trailingSubstring.substring(0, index + 1));
     });
+    return acc;
+  }, []);
+};
+
+const substrings3 = (string) => {
+  let output = [];
+  let trailingSubstringArray = trailingSubstrings(string);
+  for (let i = 0; i < trailingSubstringArray.length; i++) {
+    output.push(...leadingSubstrings(trailingSubstringArray[i]));
+  }
+
+  return output;
+};
+
+const substrings4 = (string) => {
+  return trailingSubstrings(string).reduce((acc, trailingSubstring) => {
+    acc.push(...leadingSubstrings(trailingSubstring));
     return acc;
   }, []);
 };
@@ -104,6 +125,8 @@ const substrings2 = (string) => {
 console.log(substrings("abcde"));
 console.log(substrings(""));
 console.log(substrings2("abcde"));
+console.log(substrings3("abcde"));
+console.log(substrings4("abcde"));
 
 // console.log(leadingSubstrings("abcde"));
 

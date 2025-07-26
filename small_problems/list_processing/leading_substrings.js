@@ -66,9 +66,9 @@ const leadingSubstrings2 = (str) => {
 
 // Examples
 
-console.log(leadingSubstrings("abc")); // ["a", "ab", "abc"]
-console.log(leadingSubstrings("a")); // ["a"]
-console.log(leadingSubstrings("xyzzy")); // ["x", "xy", "xyz", "xyzz", "xyzzy"]
+console.log(trailingSubstrings("abc")); // ["a", "ab", "abc"]
+console.log(trailingSubstrings("a")); // ["a"]
+console.log(trailingSubstrings("xyzzy")); // ["x", "xy", "xyz", "xyzz", "xyzzy"]
 
 console.log(leadingSubstrings2("abc")); // ["a", "ab", "abc"]
 console.log(leadingSubstrings2("a")); // ["a"]
