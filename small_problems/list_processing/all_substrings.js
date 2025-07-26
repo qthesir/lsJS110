@@ -122,11 +122,18 @@ const substrings4 = (string) => {
   }, []);
 };
 
+const substrings5 = (string) => {
+  return trailingSubstrings(string).flatMap((trailingSubstring) =>
+    leadingSubstrings(trailingSubstring)
+  );
+};
+
 console.log(substrings("abcde"));
 console.log(substrings(""));
 console.log(substrings2("abcde"));
 console.log(substrings3("abcde"));
 console.log(substrings4("abcde"));
+console.log(substrings5("abcde"));
 
 // console.log(leadingSubstrings("abcde"));
 
