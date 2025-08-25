@@ -98,7 +98,9 @@ const isPalindrome = (substring) => {
 };
 
 const isPalindrome2 = (substring) => {
-  return substring.length > 1 && substring === substring.split("").reverse().join("");
+  return (
+    substring.length > 1 && substring === substring.split("").reverse().join("")
+  );
 };
 
 const palindromes = (string) => {
