@@ -1,4 +1,5 @@
 const readlineSync = require("readline-sync");
+const { read } = require("xlsx");
 
 // Step 1: Set up and display the board
 
@@ -19,7 +20,16 @@ const readlineSync = require("readline-sync");
 // Object is better here because its more readible for someone reading / maintaining this
 // system
 
+const INITIAL_MARKER = " "
+const HUMAN_MARKER = "X"
+const COMPUTER_MARKER = "O"
+
+const prompt = (string) => {
+  console.log(string);
+};
+
 const displayBoard = (board) => {
+  console.log(" ");
   console.log("        |         |        ");
   console.log(`   ${board[1]}    |    ${board[2]}    |    ${board[3]}   `);
   console.log("        |         |        ");
@@ -31,6 +41,7 @@ const displayBoard = (board) => {
   console.log("        |         |        ");
   console.log(`   ${board[7]}    |    ${board[8]}    |    ${board[9]}   `);
   console.log("        |         |        ");
+  console.log(" ");
 
   return undefined;
 };
@@ -38,8 +49,8 @@ const displayBoard = (board) => {
 const initializeBoard = () => {
   let board = {};
 
-  for (let square = 0; square <= 9; square++) {
-    board[String(square)] = " ";
+  for (let square = 1; square <= 9; square++) {
+    board[String(square)] = INITIAL_MARKER;
   }
 
   return board;
@@ -49,9 +60,57 @@ let board = initializeBoard();
 
 displayBoard(board);
 
-const userMarksSquare = (input) => {};
+const userMarksSquare = (board) => {
+  let openSquares = Object.keys(board).filter((key) => {
+    return board[key] === " ";
+  });
+  prompt(`Choose your square: ${openSquares.join(", ")}`);
+  let userInput = readlineSync.question().trim();
 
-const computerMarksSquare = (input) => {};
+  while (isInvalidInput(userInput)) {
+    prompt("Invalid input. Enter a number between 1 and 9: ");
+    userInput = readlineSync.question();
+  }
+
+  board[userInput] = HUMAN_MARKER;
+
+  return undefined;
+};
+
+const computerMarksSquare = (board) => {
+  const computerInput = String(Math.ceil(Math.random() * 9));
+
+  while (isInvalidInput(computerInput)) {
+    computerInput = String(Math.ceil(Math.random() * 9));
+    console.log("fallback", { computerInput });
+  }
+
+  board[computerInput] = COMPUTER_MARKER;
+
+  return undefined;
+};
+
+const isInvalidInput = (input) => {
+  if (input.length > 1) {
+    return true;
+  } else if (!(input >= "1" && input <= "9")) {
+    return true;
+  } else if (board[input] === HUMAN_MARKER || board[input] === COMPUTER_MARKER) {
+    return true;
+  }
+};
+
+userMarksSquare(board);
+
+computerMarksSquare(board);
+
+displayBoard(board);
+
+userMarksSquare(board);
+
+computerMarksSquare(board);
+
+displayBoard(board);
 
 const updateBoard = (input) => {}; // shared by computer and user functions to update board state
 
