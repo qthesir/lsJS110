@@ -20,15 +20,27 @@ const { read } = require("xlsx");
 // Object is better here because its more readible for someone reading / maintaining this
 // system
 
-const INITIAL_MARKER = " "
-const HUMAN_MARKER = "X"
-const COMPUTER_MARKER = "O"
+const INITIAL_MARKER = " ";
+const HUMAN_MARKER = "X";
+const COMPUTER_MARKER = "O";
+const WAYS_TO_WIN = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+  [1, 4, 7],
+  [2, 5, 8],
+  [3, 6, 9],
+  [1, 5, 9],
+  [3, 5, 7],
+];
 
 const prompt = (string) => {
   console.log(string);
 };
 
 const displayBoard = (board) => {
+  console.clear();
+
   console.log(" ");
   console.log("        |         |        ");
   console.log(`   ${board[1]}    |    ${board[2]}    |    ${board[3]}   `);
@@ -56,10 +68,6 @@ const initializeBoard = () => {
   return board;
 };
 
-let board = initializeBoard();
-
-displayBoard(board);
-
 const userMarksSquare = (board) => {
   let openSquares = Object.keys(board).filter((key) => {
     return board[key] === " ";
@@ -67,7 +75,7 @@ const userMarksSquare = (board) => {
   prompt(`Choose your square: ${openSquares.join(", ")}`);
   let userInput = readlineSync.question().trim();
 
-  while (isInvalidInput(userInput)) {
+  while (isInvalidInput(board, userInput)) {
     prompt("Invalid input. Enter a number between 1 and 9: ");
     userInput = readlineSync.question();
   }
@@ -78,11 +86,10 @@ const userMarksSquare = (board) => {
 };
 
 const computerMarksSquare = (board) => {
-  const computerInput = String(Math.ceil(Math.random() * 9));
+  let computerInput = String(Math.ceil(Math.random() * 9));
 
-  while (isInvalidInput(computerInput)) {
+  while (isInvalidInput(board, computerInput)) {
     computerInput = String(Math.ceil(Math.random() * 9));
-    console.log("fallback", { computerInput });
   }
 
   board[computerInput] = COMPUTER_MARKER;
@@ -90,40 +97,116 @@ const computerMarksSquare = (board) => {
   return undefined;
 };
 
-const isInvalidInput = (input) => {
+const isInvalidInput = (board, input) => {
   if (input.length > 1) {
     return true;
   } else if (!(input >= "1" && input <= "9")) {
     return true;
-  } else if (board[input] === HUMAN_MARKER || board[input] === COMPUTER_MARKER) {
+  } else if (
+    board[input] === HUMAN_MARKER ||
+    board[input] === COMPUTER_MARKER
+  ) {
     return true;
   }
 };
 
-userMarksSquare(board);
+const getWinner = (board, WAYS_TO_WIN) => {
+  for (let i = 0; i < WAYS_TO_WIN.length; i++) {
+    let winningCombo = WAYS_TO_WIN[i];
+    if (
+      winningCombo.every((square) => board[square] === HUMAN_MARKER) ||
+      winningCombo.every((square) => board[square] === COMPUTER_MARKER)
+    ) {
+      return [true, board[winningCombo[0]]];
+    }
+  }
+  return [false, ""];
+};
 
-computerMarksSquare(board);
+const isTie = (board) => {
+  return Object.values(board).every(
+    (square) => square === HUMAN_MARKER || square === COMPUTER_MARKER
+  );
+};
 
-displayBoard(board);
+const playAgain = () => {
+  prompt("Would you like to play again? Enter y for yes, n for no");
+  const userResponse = readlineSync.question().trim().toLowerCase();
+  return userResponse.includes("y");
+};
 
-userMarksSquare(board);
+const displayWinner = (winner, board) => {
+  prompt("We have a winner!");
+  displayBoard(board);
+  if (winner[1] === HUMAN_MARKER) {
+    prompt("Congratulations, you've won!");
+  } else {
+    prompt("Computer wins. Try again next time!");
+  }
+};
 
-computerMarksSquare(board);
+const displayTie = (board) => {
+  displayBoard(board);
+  prompt("It's a tie!");
+};
 
-displayBoard(board);
+const checkGameForTieOrWinner = (board) => {
+  let winner = getWinner(board, WAYS_TO_WIN);
+  if (winner[0]) {
+    displayWinner(winner, board);
+    return true;
+  }
 
-const updateBoard = (input) => {}; // shared by computer and user functions to update board state
+  if (isTie(board)) {
+    displayTie(board);
+    return true;
+  }
 
-const isWinner = (gameState) => {};
+  return false;
+};
 
-const isTie = (gameState) => {};
+const playGame = (board) => {
+  while (true) {
+    displayBoard(board);
 
-const resetBoard = (gameState) => {};
+    userMarksSquare(board);
+    if (checkGameForTieOrWinner(board)) {
+      break;
+    }
+
+    computerMarksSquare(board);
+    if (checkGameForTieOrWinner(board)) {
+      break;
+    }
+  }
+};
+
+while (true) {
+  prompt("Welcome to tic-tac-toe!!!");
+  prompt("Prepare yourself...");
+
+  let board = initializeBoard();
+
+  playGame(board);
+
+  if (!playAgain()) {
+    break;
+  }
+}
 
 // displayBoard(gameState);
 
 // I need a function that displays the board depending on the
 // state of the game. Hm... How do you do this?
+
+/*
+Ok, so now that I have the functions for displaying a board, having the user mark a 
+square, and a function where the computer marks a square, how can I incorporate these
+pieces into the main game loop? Or loop through the main game? 
+
+What we probably want is a function that, when called, "plays the game". Its "playGame"
+or something of this nature. There are some steps to initialize the game, which run in 
+*/
 
 /*
 Notes & Reflection
@@ -140,4 +223,57 @@ have useState and then one of the return values is a function that updates the s
 There also subtly introducing some OOP concepts here. Creating the board as an object,
 initializing it with a function... This is all in preparation for making classes and all 
 that stuff. Pretty excited to learn this mode of thinking. 
+
+On further reflection, I do think the LS implementation of detecting whether or 
+not a square is better is more elegant and straightforward. Mine is maybe a 
+little more readible, since its checking to see if the answer is invalid,
+but there is no loop requirement for the computer chooses a square, which 
+makes it more computationally efficient, I think. Maybe that is part of it. 
+
+Another notable aspect of the LS solution: In the computer chooses a square,
+they are taking the random index of the empty squares array, which contains 
+ unmarked squares (i.e. [1,3,4,9]), and then using that to indicate which
+ number to select, which is then used to reference the board object at the 
+ correct number, which assigns the array element to the computer's market 
+ ("O" in our case.) This took me a second to wrap my head around, but I 
+ get it now. 
+
+ Here is the code: 
+
+ function computerChoosesSquare(board) {
+  let emptySquares = Object.keys(board).filter(key => {
+    return board[key] === INITIAL_MARKER;
+  });
+
+  let randomIndex = Math.floor(Math.random() * emptySquares.length);
+
+  let square = emptySquares[randomIndex];
+  board[square] = COMPUTER_MARKER;
+}
+
+THE NEED FOR TESTING
+
+Ah, ok. Now I understand the need for a solid testing framework. I'd like to be able to test my function "isWinner" without running 
+the entire program. This would involve invoking the function with the par-baked values that you would expect, for example where
+I would expect the first winning scenario on the board (a board with squares 1, 2, and 3 with all Xs or 0s.
+
+
+REFRESHER
+
+Variable scoping and inheretance. I encountered an issue where the isInvalidInput function was throwing an error, saying
+it could not find the board variable. I thought that, because board was declared within the while loop function scope, which is the
+outer scope of playGame, which is the outer scope of userMarksSquare, which is the outer scope of isInvalidInput, that isInvalidInput 
+would have access to the board variable in userMarksSquare's scope. The scoping, however, is dependent on where the function is 
+defined - it only has access to the variables within the scope of its definition, not where it is called. Thus, given there is no
+board variable declared in the global scope (where the isInvalidInput function is defined), it does not have access to board. 
+
+EDGE CASE
+
+The way I've set up the computer checker has an issue... If the board is full, then the computer will never find a valid input.
+So the isInvalidInput needs to consider the case where the board is full. It could also end up taking an arbritrarily long period
+of time. This is why LS used the solution they did, or perhaps that is part of the reason. 
+
+mmmmh... No, actually. I do not think the LS solution would solve this in any case. The check for a winner needs to be done before
+and after the computer and human take their turns, not just after the computer does. Because, if the human wins the game, for example,
+the computer should not go again. The check should be after each person takes their turn. Including the board being full. 
 */
