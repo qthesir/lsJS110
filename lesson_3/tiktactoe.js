@@ -34,12 +34,16 @@ const WAYS_TO_WIN = [
   [3, 5, 7],
 ];
 
+const NUMBER_OF_GAMES_TO_WIN_MATCH = 5;
+
 const prompt = (string) => {
   console.log(string);
 };
 
 const displayBoard = (board) => {
-  console.clear();
+  // console.clear();
+
+  console.log(`You are ${HUMAN_MARKER}. Computer is ${COMPUTER_MARKER}`);
 
   console.log(" ");
   console.log("        |         |        ");
@@ -68,11 +72,35 @@ const initializeBoard = () => {
   return board;
 };
 
+const joinOr = (openSquares, delimeter = ", ", joinWord = "or") => {
+  switch (openSquares.length) {
+    case 0:
+      return "";
+    case 1:
+      return `${openSquares[0]}`;
+    case 2:
+      return openSquares.join(` ${joinWord} `);
+    default:
+      return `${openSquares
+        .slice(0, openSquares.length - 1)
+        .join(delimeter)}${delimeter}${joinWord} ${
+        openSquares[openSquares.length - 1]
+      }`;
+  }
+};
+
+// console.log(joinOr([1, 2, 3])); // => "1, 2, or 3"
+// console.log(joinOr([1, 2, 3], "; ")); // => "1; 2; or 3"
+// console.log(joinOr([1, 2, 3], ", ", "and")); // => "1, 2, and 3"
+// console.log(joinOr([])); // => ""
+// console.log(joinOr([5])); // => "5"
+// console.log(joinOr([1, 2])); // => "1 or 2"
+
 const userMarksSquare = (board) => {
   let openSquares = Object.keys(board).filter((key) => {
     return board[key] === " ";
   });
-  prompt(`Choose your square: ${openSquares.join(", ")}`);
+  prompt(`Choose your square: ${joinOr(openSquares)}`);
   let userInput = readlineSync.question().trim();
 
   while (isInvalidInput(board, userInput)) {
@@ -110,23 +138,27 @@ const isInvalidInput = (board, input) => {
   }
 };
 
-const getWinner = (board, WAYS_TO_WIN) => {
+const isTie = (board) => {
+  return Object.values(board).every(
+    (square) => square === HUMAN_MARKER || square === COMPUTER_MARKER
+  );
+};
+
+const isWinner = (board, WAYS_TO_WIN) => {
+  return !!detectWinner(board, WAYS_TO_WIN);
+};
+
+const detectWinner = (board, WAYS_TO_WIN) => {
   for (let i = 0; i < WAYS_TO_WIN.length; i++) {
     let winningCombo = WAYS_TO_WIN[i];
     if (
       winningCombo.every((square) => board[square] === HUMAN_MARKER) ||
       winningCombo.every((square) => board[square] === COMPUTER_MARKER)
     ) {
-      return [true, board[winningCombo[0]]];
+      return board[winningCombo[0]];
     }
   }
-  return [false, ""];
-};
-
-const isTie = (board) => {
-  return Object.values(board).every(
-    (square) => square === HUMAN_MARKER || square === COMPUTER_MARKER
-  );
+  return null;
 };
 
 const playAgain = () => {
@@ -138,7 +170,7 @@ const playAgain = () => {
 const displayWinner = (winner, board) => {
   prompt("We have a winner!");
   displayBoard(board);
-  if (winner[1] === HUMAN_MARKER) {
+  if (winner === HUMAN_MARKER) {
     prompt("Congratulations, you've won!");
   } else {
     prompt("Computer wins. Try again next time!");
@@ -151,8 +183,8 @@ const displayTie = (board) => {
 };
 
 const checkGameForTieOrWinner = (board) => {
-  let winner = getWinner(board, WAYS_TO_WIN);
-  if (winner[0]) {
+  if (isWinner(board, WAYS_TO_WIN)) {
+    let winner = detectWinner(board, WAYS_TO_WIN);
     displayWinner(winner, board);
     return true;
   }
@@ -163,6 +195,28 @@ const checkGameForTieOrWinner = (board) => {
   }
 
   return false;
+};
+
+const updateNumberOfGamesWon = (board, numberOfGamesWon) => {
+  if (isWinner(board, WAYS_TO_WIN)) {
+    let winner = detectWinner(board, WAYS_TO_WIN);
+    if (winner === HUMAN_MARKER) {
+      numberOfGamesWon["humanWins"] += 1;
+    } else if (winner === COMPUTER_MARKER) {
+      numberOfGamesWon["computerWins"] += 1;
+    } else if (isTie(board)) {
+      numberOfGamesWon["ties"] += 1;
+    }
+  }
+};
+
+const displayNumberOfGamesWon = (numberOfGamesWon) => {
+  prompt("-------------------------");
+  prompt("Game Completed. Score: ");
+  prompt(`Player Wins: ${numberOfGamesWon["humanWins"]}`);
+  prompt(`Computer Wins: ${numberOfGamesWon["computerWins"]}`);
+  prompt(`Ties: ${numberOfGamesWon["ties"]}`);
+  prompt("-------------------------");
 };
 
 const playGame = (board) => {
@@ -185,14 +239,38 @@ while (true) {
   prompt("Welcome to tic-tac-toe!!!");
   prompt("Prepare yourself...");
 
-  let board = initializeBoard();
+  let numberOfGamesWon = {
+    humanWins: 0,
+    computerWins: 0,
+    ties: 0,
+  };
 
-  playGame(board);
+  while (true) {
+    let board = initializeBoard();
+    playGame(board);
+    updateNumberOfGamesWon(board, numberOfGamesWon);
+    displayNumberOfGamesWon(numberOfGamesWon);
+    if (numberOfGamesWon["humanWins"] >= NUMBER_OF_GAMES_TO_WIN_MATCH) {
+      prompt(
+        `Player has won ${NUMBER_OF_GAMES_TO_WIN_MATCH} games and is the reigning champion!`
+      );
+      break;
+    }
+
+    if (numberOfGamesWon["computerWins"] >= 5) {
+      prompt(
+        `Computer has won ${NUMBER_OF_GAMES_TO_WIN_MATCH} games and is the reigning champion!`
+      );
+      break;
+    }
+  }
 
   if (!playAgain()) {
     break;
   }
 }
+
+prompt("Thanks for playing Tic Tac Toe!");
 
 // displayBoard(gameState);
 
@@ -276,4 +354,13 @@ of time. This is why LS used the solution they did, or perhaps that is part of t
 mmmmh... No, actually. I do not think the LS solution would solve this in any case. The check for a winner needs to be done before
 and after the computer and human take their turns, not just after the computer does. Because, if the human wins the game, for example,
 the computer should not go again. The check should be after each person takes their turn. Including the board being full. 
+
+The way that LS reasoned through the loop and detect winner functions is notable. They started at the top level, thinking about the
+functions, and then also thought about how the functions could be defined in terms of other functions. Ultimately, this ended up 
+with the system of "detectWinner" being the core functionality inside of "someoneWon" (or in my case isWinner). So, this is a decent
+strategy. Start with top level, practical constructs, think about your program in terms of those practical constructs, and then 
+figure out the low level stuff after that. 
+
+I also like LS' implementation of detectWinner better than mine. Even though mine is more succinct, launch schools is a little more
+clear and easy to read, although I am proud of the fact that mine is more succinct. 
 */
