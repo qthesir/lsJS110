@@ -36,6 +36,9 @@ const WAYS_TO_WIN = [
 
 const NUMBER_OF_GAMES_TO_WIN_MATCH = 5;
 
+// Valid option for this constant: player, computer, or choose
+const WHO_GOES_FIRST = "player";
+
 const prompt = (string) => {
   console.log(string);
 };
@@ -96,15 +99,18 @@ const joinOr = (openSquares, delimeter = ", ", joinWord = "or") => {
 // console.log(joinOr([5])); // => "5"
 // console.log(joinOr([1, 2])); // => "1 or 2"
 
-const userMarksSquare = (board) => {
-  let openSquares = Object.keys(board).filter((key) => {
-    return board[key] === " ";
+const getOpenSquares = (board) => {
+  return Object.keys(board).filter((key) => {
+    return board[key] === INITIAL_MARKER;
   });
-  prompt(`Choose your square: ${joinOr(openSquares)}`);
+};
+const userMarksSquare = (board) => {
+  let openSquares = getOpenSquares(board);
+  prompt(`Choose a square: ${joinOr(openSquares)}`);
   let userInput = readlineSync.question().trim();
 
   while (isInvalidInput(board, userInput)) {
-    prompt("Invalid input. Enter a number between 1 and 9: ");
+    prompt(`Invalid input. Choose a square: ${joinOr(openSquares)}`);
     userInput = readlineSync.question();
   }
 
@@ -113,11 +119,76 @@ const userMarksSquare = (board) => {
   return undefined;
 };
 
-const computerMarksSquare = (board) => {
-  let computerInput = String(Math.ceil(Math.random() * 9));
+// The conditions for an at risk row are:
+// 1. There are 2/3 squares in a winning combination that are the opponents AND
+// 2. There is at least 1 empty space
+/*
+In an array, this could simply look like: 'XX ' OR 'X X' OR ' XX'
+If joining the board values at those squares together produces at least one of those results, then it is at risk. 
 
-  while (isInvalidInput(board, computerInput)) {
+Then, for the getSquaresInAtRiskRow, you're identifying the row with the empty space
+*/
+
+const isOpportunity = (board, WAYS_TO_WIN) => {
+  return !!findOpportunitySquare(board, WAYS_TO_WIN);
+};
+
+// The way that I've set this up... I will be checking for opportunity Os, attack positions, first, but only WITHIN a way to
+// win... That is, I'm not getting the complete list of opportunities and what type of opportunity they are.
+/* I suppose I could, as brute force, create a new object that contains the type of opportunity (attack, defense) and its 
+winning move, and select the location that's attack before I do defense. I could also just iterate through the opportunities 
+to win first, then iterate through the opportunities to lose.
+
+To note: Ties are not updating either. This is suboptimal.
+
+Ok, got it below. That was the easier change I could do. 
+
+*/
+
+const findOpportunitySquare = (board, WAYS_TO_WIN) => {
+  for (let i = 0; i < WAYS_TO_WIN.length; i++) {
+    let [sq1, sq2, sq3] = WAYS_TO_WIN[i];
+    let combo = [board[sq1], board[sq2], board[sq3]].join("");
+
+    // Opportunities to win (search first)
+    if (combo === " OO") {
+      return WAYS_TO_WIN[i][0];
+    } else if (combo === "O O") {
+      return WAYS_TO_WIN[i][1];
+    } else if (combo === "OO ") {
+      return WAYS_TO_WIN[i][2];
+    }
+  }
+
+  for (let i = 0; i < WAYS_TO_WIN.length; i++) {
+    let [sq1, sq2, sq3] = WAYS_TO_WIN[i];
+    let combo = [board[sq1], board[sq2], board[sq3]].join("");
+
+    // Opportunities to defend (search second)
+    if (combo === " XX") {
+      return WAYS_TO_WIN[i][0];
+    } else if (combo === "X X") {
+      return WAYS_TO_WIN[i][1];
+    } else if (combo === "XX ") {
+      return WAYS_TO_WIN[i][2];
+    }
+  }
+
+  return null;
+};
+
+const computerMarksSquare = (board) => {
+  let computerInput;
+  if (isOpportunity(board, WAYS_TO_WIN)) {
+    computerInput = findOpportunitySquare(board, WAYS_TO_WIN);
+  } else if (getOpenSquares(board).includes("5")) {
+    computerInput = 5;
+  } else {
     computerInput = String(Math.ceil(Math.random() * 9));
+
+    while (isInvalidInput(board, computerInput)) {
+      computerInput = String(Math.ceil(Math.random() * 9));
+    }
   }
 
   board[computerInput] = COMPUTER_MARKER;
@@ -221,16 +292,27 @@ const displayNumberOfGamesWon = (numberOfGamesWon) => {
 
 const playGame = (board) => {
   while (true) {
-    displayBoard(board);
+    if (WHO_GOES_FIRST === "player") {
+      displayBoard(board);
+      userMarksSquare(board);
+      if (checkGameForTieOrWinner(board)) {
+        break;
+      }
 
-    userMarksSquare(board);
-    if (checkGameForTieOrWinner(board)) {
-      break;
-    }
-
-    computerMarksSquare(board);
-    if (checkGameForTieOrWinner(board)) {
-      break;
+      computerMarksSquare(board);
+      if (checkGameForTieOrWinner(board)) {
+        break;
+      }
+    } else if (WHO_GOES_FIRST === "computer") {
+      computerMarksSquare(board);
+      if (checkGameForTieOrWinner(board)) {
+        break;
+      }
+      displayBoard(board);
+      userMarksSquare(board);
+      if (checkGameForTieOrWinner(board)) {
+        break;
+      }
     }
   }
 };
@@ -247,9 +329,11 @@ while (true) {
 
   while (true) {
     let board = initializeBoard();
+
     playGame(board);
     updateNumberOfGamesWon(board, numberOfGamesWon);
     displayNumberOfGamesWon(numberOfGamesWon);
+
     if (numberOfGamesWon["humanWins"] >= NUMBER_OF_GAMES_TO_WIN_MATCH) {
       prompt(
         `Player has won ${NUMBER_OF_GAMES_TO_WIN_MATCH} games and is the reigning champion!`
@@ -363,4 +447,10 @@ figure out the low level stuff after that.
 
 I also like LS' implementation of detectWinner better than mine. Even though mine is more succinct, launch schools is a little more
 clear and easy to read, although I am proud of the fact that mine is more succinct. 
+
+Maybe I should incorporate, instead of the inner loop in the main loop, I should name this "playRound". Program has a round, 
+round has playGame until the computer or player reach 5 victories, and playGame has turns until one of the players wins or 
+its a tie. 
+
+Objects would probably make this a lot more organized. 
 */
