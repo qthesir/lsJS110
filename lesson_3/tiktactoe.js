@@ -34,7 +34,7 @@ const WAYS_TO_WIN = [
   [3, 5, 7],
 ];
 
-const NUMBER_OF_GAMES_TO_WIN_MATCH = 5;
+const NUMBER_OF_GAMES_TO_WIN_MATCH = 1;
 
 // Valid option for this constant: player, computer, or choose
 const WHO_GOES_FIRST = "choose";
@@ -234,8 +234,19 @@ const detectWinner = (board, WAYS_TO_WIN) => {
 
 const playAgain = () => {
   prompt("Would you like to play again? Enter y for yes, n for no");
-  const userResponse = readlineSync.question().trim().toLowerCase();
-  return userResponse.includes("y");
+  let userResponse = readlineSync.question().trim().toLowerCase();
+  while (true) {
+    if (userResponse.includes("y") && userResponse.length <= 3) {
+      return true;
+    } else if (userResponse.includes("n") && userResponse.length <= 3) {
+      return false;
+    } else {
+      prompt(
+        "Invalid input. Would you like to play again? Enter y for yes, n for no"
+      );
+      userResponse = readlineSync.question().trim().toLowerCase();
+    }
+  }
 };
 
 const displayWinner = (winner, board) => {
@@ -300,10 +311,10 @@ const playGame = (board) => {
     let playerChoice = readlineSync.question();
 
     while (true) {
-      if (playerChoice.toLowerCase().includes("p")) {
+      if (playerChoice[0].toLowerCase().trim() === "p") {
         firstTurn = "player";
         break;
-      } else if (playerChoice.toLowerCase().includes("c")) {
+      } else if (playerChoice[0].toLowerCase().trim() === "c") {
         firstTurn = "computer";
         break;
       } else {
@@ -367,7 +378,7 @@ while (true) {
       break;
     }
 
-    if (numberOfGamesWon["computerWins"] >= 5) {
+    if (numberOfGamesWon["computerWins"] >= NUMBER_OF_GAMES_TO_WIN_MATCH) {
       prompt(
         `Computer has won ${NUMBER_OF_GAMES_TO_WIN_MATCH} games and is the reigning champion!`
       );
