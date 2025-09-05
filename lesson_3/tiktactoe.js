@@ -37,7 +37,7 @@ const WAYS_TO_WIN = [
 const NUMBER_OF_GAMES_TO_WIN_MATCH = 5;
 
 // Valid option for this constant: player, computer, or choose
-const WHO_GOES_FIRST = "computer";
+const WHO_GOES_FIRST = "choose";
 
 const prompt = (string) => {
   console.log(string);
@@ -291,9 +291,34 @@ const displayNumberOfGamesWon = (numberOfGamesWon) => {
 };
 
 const playGame = (board) => {
-  const 
+  let firstTurn;
+
+  if (WHO_GOES_FIRST === "choose") {
+    prompt(
+      'Choose whether you or the computer will play first. Type "player" for you and "computer" for the computer: '
+    );
+    let playerChoice = readlineSync.question();
+
+    while (true) {
+      if (playerChoice.toLowerCase().includes("p")) {
+        firstTurn = "player";
+        break;
+      } else if (playerChoice.toLowerCase().includes("c")) {
+        firstTurn = "computer";
+        break;
+      } else {
+        prompt(
+          'Invalid response. Choose whether you or the computer will play first. Type "player" for you and "computer" for the computer: '
+        );
+        playerChoice = readlineSync.question();
+      }
+    }
+  } else {
+    firstTurn = WHO_GOES_FIRST;
+  }
+
   while (true) {
-    if (WHO_GOES_FIRST === "player") {
+    if (firstTurn === "player") {
       displayBoard(board);
       userMarksSquare(board);
       if (checkGameForTieOrWinner(board)) {
@@ -304,7 +329,7 @@ const playGame = (board) => {
       if (checkGameForTieOrWinner(board)) {
         break;
       }
-    } else if (WHO_GOES_FIRST === "computer") {
+    } else if (firstTurn === "computer") {
       computerMarksSquare(board);
       if (checkGameForTieOrWinner(board)) {
         break;
