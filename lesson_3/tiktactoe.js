@@ -328,6 +328,8 @@ const playGame = (board) => {
     firstTurn = WHO_GOES_FIRST;
   }
 
+  // Here, what I could do, with the alternate player function, is set the "current player" to first turn. This would keep my 
+  // existing logic, the logic above, intact. 
   while (true) {
     if (firstTurn === "player") {
       displayBoard(board);
