@@ -37,7 +37,7 @@ const WAYS_TO_WIN = [
 const NUMBER_OF_GAMES_TO_WIN_MATCH = 5;
 
 // Valid option for this constant: player, computer, or choose
-const WHO_GOES_FIRST = "player";
+const WHO_GOES_FIRST = "computer";
 
 const prompt = (string) => {
   console.log(string);
@@ -291,6 +291,7 @@ const displayNumberOfGamesWon = (numberOfGamesWon) => {
 };
 
 const playGame = (board) => {
+  const 
   while (true) {
     if (WHO_GOES_FIRST === "player") {
       displayBoard(board);
