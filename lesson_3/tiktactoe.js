@@ -1,25 +1,6 @@
 const readlineSync = require("readline-sync");
 const { read } = require("xlsx");
 
-// Step 1: Set up and display the board
-
-// Display the board
-
-// let board = {
-//   1: " ", // top left
-//   2: " ", // top center
-//   3: " ", // top right
-//   4: " ", // middle left
-//   5: " ", // middle center
-//   6: " ", // middle right
-//   7: " ", // bottom left
-//   8: " ", // bottom center
-//   9: " ", // bottom right
-// };
-
-// Object is better here because its more readible for someone reading / maintaining this
-// system
-
 const INITIAL_MARKER = " ";
 const HUMAN_MARKER = "X";
 const COMPUTER_MARKER = "O";
@@ -92,18 +73,12 @@ const joinOr = (openSquares, delimeter = ", ", joinWord = "or") => {
   }
 };
 
-// console.log(joinOr([1, 2, 3])); // => "1, 2, or 3"
-// console.log(joinOr([1, 2, 3], "; ")); // => "1; 2; or 3"
-// console.log(joinOr([1, 2, 3], ", ", "and")); // => "1, 2, and 3"
-// console.log(joinOr([])); // => ""
-// console.log(joinOr([5])); // => "5"
-// console.log(joinOr([1, 2])); // => "1 or 2"
-
 const getOpenSquares = (board) => {
   return Object.keys(board).filter((key) => {
     return board[key] === INITIAL_MARKER;
   });
 };
+
 const userMarksSquare = (board) => {
   let openSquares = getOpenSquares(board);
   prompt(`Choose a square: ${joinOr(openSquares)}`);
@@ -119,31 +94,9 @@ const userMarksSquare = (board) => {
   return undefined;
 };
 
-// The conditions for an at risk row are:
-// 1. There are 2/3 squares in a winning combination that are the opponents AND
-// 2. There is at least 1 empty space
-/*
-In an array, this could simply look like: 'XX ' OR 'X X' OR ' XX'
-If joining the board values at those squares together produces at least one of those results, then it is at risk. 
-
-Then, for the getSquaresInAtRiskRow, you're identifying the row with the empty space
-*/
-
 const isOpportunity = (board, WAYS_TO_WIN) => {
   return !!findOpportunitySquare(board, WAYS_TO_WIN);
 };
-
-// The way that I've set this up... I will be checking for opportunity Os, attack positions, first, but only WITHIN a way to
-// win... That is, I'm not getting the complete list of opportunities and what type of opportunity they are.
-/* I suppose I could, as brute force, create a new object that contains the type of opportunity (attack, defense) and its 
-winning move, and select the location that's attack before I do defense. I could also just iterate through the opportunities 
-to win first, then iterate through the opportunities to lose.
-
-To note: Ties are not updating either. This is suboptimal.
-
-Ok, got it below. That was the easier change I could do. 
-
-*/
 
 const findOpportunitySquare = (board, WAYS_TO_WIN) => {
   for (let i = 0; i < WAYS_TO_WIN.length; i++) {
@@ -391,10 +344,88 @@ while (true) {
 
 prompt("Thanks for playing Tic Tac Toe!");
 
-// displayBoard(gameState);
+/*
 
-// I need a function that displays the board depending on the
-// state of the game. Hm... How do you do this?
+IMPLEMENTING MINIMAX
+
+Here's the pseudocode:
+
+function minimax(node, depth, maximizingPlayer) is
+    if depth = 0 or node is a terminal node then
+        return the heuristic value of node
+    if maximizingPlayer then
+        value := −∞
+        for each child of node do
+            value := max(value, minimax(child, depth − 1, FALSE))
+        return value
+    else (* minimizing player *)
+        value := +∞
+        for each child of node do
+            value := min(value, minimax(child, depth − 1, TRUE))
+        return value
+
+(* Initial call *)
+minimax(origin, depth, TRUE)
+
+Ok, well, how to implement this into the game? 
+
+Do I need to call minimax for each individual move in the game? Or do I just need to call it once, and it will find the right move?
+
+No... What makes sense based on what I've seen is that its evaluating the score of a particular move based on the value of all 
+possible successive moves that could be taken by the player. So, I think, I need to run this on the current state of the board for each 
+available move to the computer. 
+
+So how would I expand this algorithm to deal with a game with 9 moves? 
+
+Well, first, lets think about the scoring system. -1 for a position where O wins. +1 for a position where X wins. And 0 for where neither
+win. This needs to be evaluated, so lets have a function for scoring.
+
+*/
+
+const getPositionScore = (board, WAYS_TO_WIN) => {
+  switch (detectWinner(board, WAYS_TO_WIN)) {
+    case 'X':
+      return 1
+    case 'O': 
+      return -1 
+    default:
+      return 0
+  }
+}
+
+const miniMax = (board, maximizingPlayer, WAYS_TO_WIN) => {
+  let board = [...board]
+  let value 
+  let openSquares = getOpenSquares(board)
+
+  if (!!detectWinner(board, WAYS_TO_WIN)) {
+    return getPositionScore(board, WAYS_TO_WIN)
+  }
+
+  if (maximizingPlayer) {
+    let value = -Infinity
+    openSquares.forEach(square => {
+      board[square] = 'X'
+      value = Math.max(value, miniMax(board, false, WAYS_TO_WIN))
+    })
+    return value
+  } else {
+    let value = Infinity
+    openSquares.forEach(square => {
+      board[square] = 'O'
+      value = Math.min(value, miniMax(board, false, WAYS_TO_WIN))
+    })
+    return value
+  }
+
+
+
+}
+
+// for each child node, the children are going to be the available open squares left on the board. So, its going to be for each 
+// square on the return value of getOpenSquares(). I also need to update the board, but not the global value of the board. I need 
+// to create a copy to simulate. Hmmmmmm. 
+
 
 /*
 Ok, so now that I have the functions for displaying a board, having the user mark a 
@@ -489,3 +520,5 @@ its a tie.
 
 Objects would probably make this a lot more organized. 
 */
+
+
