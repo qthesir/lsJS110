@@ -196,6 +196,18 @@ const computerMarksSquare = (board) => {
   return undefined;
 };
 
+const chooseSquare = (board, currentPlayer) => {
+  currentPlayer === "player"
+    ? userMarksSquare(board)
+    : computerMarksSquare(board);
+
+  return undefined;
+};
+
+const alternatePlayer = (currentPlayer) => {
+  return currentPlayer === "player" ? "computer" : "player";
+};
+
 const isInvalidInput = (board, input) => {
   if (input.length > 1) {
     return true;
@@ -206,6 +218,26 @@ const isInvalidInput = (board, input) => {
     board[input] === COMPUTER_MARKER
   ) {
     return true;
+  }
+};
+
+const userSelectsCurrentPlayer = () => {
+  prompt(
+    'Choose whether you or the computer will play first. Type "player" for you and "computer" for the computer: '
+  );
+  let playerChoice = readlineSync.question();
+
+  while (true) {
+    if (playerChoice[0].toLowerCase().trim() === "p") {
+      return "player";
+    } else if (playerChoice[0].toLowerCase().trim() === "c") {
+      return "computer";
+    } else {
+      prompt(
+        'Invalid response. Choose whether you or the computer will play first. Type "player" for you and "computer" for the computer: '
+      );
+      playerChoice = readlineSync.question();
+    }
   }
 };
 
@@ -302,56 +334,20 @@ const displayNumberOfGamesWon = (numberOfGamesWon) => {
 };
 
 const playGame = (board) => {
-  let firstTurn;
+  let currentPlayer;
 
   if (WHO_GOES_FIRST === "choose") {
-    prompt(
-      'Choose whether you or the computer will play first. Type "player" for you and "computer" for the computer: '
-    );
-    let playerChoice = readlineSync.question();
-
-    while (true) {
-      if (playerChoice[0].toLowerCase().trim() === "p") {
-        firstTurn = "player";
-        break;
-      } else if (playerChoice[0].toLowerCase().trim() === "c") {
-        firstTurn = "computer";
-        break;
-      } else {
-        prompt(
-          'Invalid response. Choose whether you or the computer will play first. Type "player" for you and "computer" for the computer: '
-        );
-        playerChoice = readlineSync.question();
-      }
-    }
+    currentPlayer = userSelectsCurrentPlayer();
   } else {
-    firstTurn = WHO_GOES_FIRST;
+    currentPlayer = WHO_GOES_FIRST;
   }
 
-  // Here, what I could do, with the alternate player function, is set the "current player" to first turn. This would keep my 
-  // existing logic, the logic above, intact. 
   while (true) {
-    if (firstTurn === "player") {
-      displayBoard(board);
-      userMarksSquare(board);
-      if (checkGameForTieOrWinner(board)) {
-        break;
-      }
-
-      computerMarksSquare(board);
-      if (checkGameForTieOrWinner(board)) {
-        break;
-      }
-    } else if (firstTurn === "computer") {
-      computerMarksSquare(board);
-      if (checkGameForTieOrWinner(board)) {
-        break;
-      }
-      displayBoard(board);
-      userMarksSquare(board);
-      if (checkGameForTieOrWinner(board)) {
-        break;
-      }
+    displayBoard(board);
+    chooseSquare(board, currentPlayer);
+    currentPlayer = alternatePlayer(currentPlayer);
+    if (checkGameForTieOrWinner(board)) {
+      break;
     }
   }
 };
