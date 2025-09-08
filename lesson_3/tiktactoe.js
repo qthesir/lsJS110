@@ -14,6 +14,7 @@ const WAYS_TO_WIN = [
   [1, 5, 9],
   [3, 5, 7],
 ];
+const LUDICROUS_COMPUTER_MODE = true;
 
 const NUMBER_OF_GAMES_TO_WIN_MATCH = 1;
 
@@ -130,17 +131,107 @@ const findOpportunitySquare = (board, WAYS_TO_WIN) => {
   return null;
 };
 
+// const simBoard = {
+//   1: "O",
+//   2: " ",
+//   3: " ",
+//   4: "O",
+//   5: "X",
+//   6: " ",
+//   7: "X",
+//   8: "O",
+//   9: "X",
+// };
+
+// const emptyBoard = initializeBoard();
+
+// let oneSquareBoard = emptyBoard;
+
+// oneSquareBoard[1] = "X";
+
+const getPositionScore = (board, WAYS_TO_WIN) => {
+  switch (detectWinner(board, WAYS_TO_WIN)) {
+    case "O":
+      return -1;
+    case "X":
+      return 1;
+    default:
+      return 0;
+  }
+};
+
+const getMaxWithPosition = (movesWithScores) => {
+  let maxValue = -Infinity;
+  let maxScoreAndPosition;
+  for (let i = 0; i < movesWithScores.length; i++) {
+    if (movesWithScores[i][0] > maxValue) {
+      maxValue = movesWithScores[i][0];
+      maxScoreAndPosition = movesWithScores[i];
+    }
+  }
+  return maxScoreAndPosition;
+};
+
+const getMinWithPosition = (movesWithScores) => {
+  let minValue = Infinity;
+  let minScoreAndPosition;
+  for (let i = 0; i < movesWithScores.length; i++) {
+    if (movesWithScores[i][0] < minValue) {
+      minValue = movesWithScores[i][0];
+      minScoreAndPosition = movesWithScores[i];
+    }
+  }
+  return minScoreAndPosition;
+};
+
+const miniMax = (board, maximizingPlayer, WAYS_TO_WIN) => {
+  // displayBoard(board);
+  let boardCopy = Object.fromEntries(Object.entries(board));
+  if (!!detectWinner(boardCopy, WAYS_TO_WIN) || isTie(boardCopy)) {
+    return [getPositionScore(boardCopy, WAYS_TO_WIN), undefined];
+  }
+
+  let eval;
+  let openSquares = getOpenSquares(boardCopy);
+
+  if (maximizingPlayer) {
+    let movesWithScores = [];
+    openSquares.forEach((square) => {
+      let boardState = Object.fromEntries(Object.entries(boardCopy));
+      boardState[square] = "X";
+      [eval, _] = miniMax(boardState, false, WAYS_TO_WIN);
+      movesWithScores.push([eval, square]);
+    });
+    // console.log(movesWithScores);
+    return getMaxWithPosition(movesWithScores);
+  } else {
+    let movesWithScores = [];
+    openSquares.forEach((square) => {
+      let boardState = Object.fromEntries(Object.entries(boardCopy));
+      boardState[square] = "O";
+      [eval, _] = miniMax(boardState, true, WAYS_TO_WIN);
+      movesWithScores.push([eval, square]);
+    });
+    // console.log(movesWithScores);
+    return getMinWithPosition(movesWithScores);
+  }
+};
+
 const computerMarksSquare = (board) => {
   let computerInput;
-  if (isOpportunity(board, WAYS_TO_WIN)) {
-    computerInput = findOpportunitySquare(board, WAYS_TO_WIN);
-  } else if (getOpenSquares(board).includes("5")) {
-    computerInput = 5;
+  if (LUDICROUS_COMPUTER_MODE) {
+    computerInput = miniMax(board, false, WAYS_TO_WIN)[1];
   } else {
-    computerInput = String(Math.ceil(Math.random() * 9));
-
-    while (isInvalidInput(board, computerInput)) {
+    if (isOpportunity(board, WAYS_TO_WIN)) {
+      computerInput = findOpportunitySquare(board, WAYS_TO_WIN);
+    } else if (getOpenSquares(board).includes("5")) {
+      computerInput = 5;
+    } else {
       computerInput = String(Math.ceil(Math.random() * 9));
+
+      while (isInvalidInput(board, computerInput)) {
+        computerInput = String(Math.ceil(Math.random() * 9));
+      }
     }
   }
 
@@ -382,50 +473,9 @@ win. This needs to be evaluated, so lets have a function for scoring.
 
 */
 
-const getPositionScore = (board, WAYS_TO_WIN) => {
-  switch (detectWinner(board, WAYS_TO_WIN)) {
-    case 'X':
-      return 1
-    case 'O': 
-      return -1 
-    default:
-      return 0
-  }
-}
-
-const miniMax = (board, maximizingPlayer, WAYS_TO_WIN) => {
-  let board = [...board]
-  let value 
-  let openSquares = getOpenSquares(board)
-
-  if (!!detectWinner(board, WAYS_TO_WIN)) {
-    return getPositionScore(board, WAYS_TO_WIN)
-  }
-
-  if (maximizingPlayer) {
-    let value = -Infinity
-    openSquares.forEach(square => {
-      board[square] = 'X'
-      value = Math.max(value, miniMax(board, false, WAYS_TO_WIN))
-    })
-    return value
-  } else {
-    let value = Infinity
-    openSquares.forEach(square => {
-      board[square] = 'O'
-      value = Math.min(value, miniMax(board, false, WAYS_TO_WIN))
-    })
-    return value
-  }
-
-
-
-}
-
-// for each child node, the children are going to be the available open squares left on the board. So, its going to be for each 
-// square on the return value of getOpenSquares(). I also need to update the board, but not the global value of the board. I need 
-// to create a copy to simulate. Hmmmmmm. 
-
+// for each child node, the children are going to be the available open squares left on the board. So, its going to be for each
+// square on the return value of getOpenSquares(). I also need to update the board, but not the global value of the board. I need
+// to create a copy to simulate. Hmmmmmm.
 
 /*
 Ok, so now that I have the functions for displaying a board, having the user mark a 
@@ -520,5 +570,3 @@ its a tie.
 
 Objects would probably make this a lot more organized. 
 */
-
-
