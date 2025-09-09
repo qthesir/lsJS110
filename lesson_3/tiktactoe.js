@@ -105,11 +105,11 @@ const findOpportunitySquare = (board, WAYS_TO_WIN) => {
     let combo = [board[sq1], board[sq2], board[sq3]].join("");
 
     // Opportunities to win (search first)
-    if (combo === " OO") {
+    if (combo === ` ${COMPUTER_MARKER}${COMPUTER_MARKER}`) {
       return WAYS_TO_WIN[i][0];
-    } else if (combo === "O O") {
+    } else if (combo === `${COMPUTER_MARKER} ${COMPUTER_MARKER}`) {
       return WAYS_TO_WIN[i][1];
-    } else if (combo === "OO ") {
+    } else if (combo === `${COMPUTER_MARKER}${COMPUTER_MARKER} `) {
       return WAYS_TO_WIN[i][2];
     }
   }
@@ -119,11 +119,11 @@ const findOpportunitySquare = (board, WAYS_TO_WIN) => {
     let combo = [board[sq1], board[sq2], board[sq3]].join("");
 
     // Opportunities to defend (search second)
-    if (combo === " XX") {
+    if (combo === ` ${HUMAN_MARKER}${HUMAN_MARKER}`) {
       return WAYS_TO_WIN[i][0];
-    } else if (combo === "X X") {
+    } else if (combo === `${HUMAN_MARKER} ${HUMAN_MARKER}`) {
       return WAYS_TO_WIN[i][1];
-    } else if (combo === "XX ") {
+    } else if (combo === `${HUMAN_MARKER}${HUMAN_MARKER} `) {
       return WAYS_TO_WIN[i][2];
     }
   }
@@ -151,9 +151,9 @@ const findOpportunitySquare = (board, WAYS_TO_WIN) => {
 
 const getPositionScore = (board, WAYS_TO_WIN) => {
   switch (detectWinner(board, WAYS_TO_WIN)) {
-    case "O":
+    case COMPUTER_MARKER:
       return -1;
-    case "X":
+    case HUMAN_MARKER:
       return 1;
     default:
       return 0;
@@ -198,21 +198,19 @@ const miniMax = (board, maximizingPlayer, WAYS_TO_WIN) => {
     let movesWithScores = [];
     openSquares.forEach((square) => {
       let boardState = Object.fromEntries(Object.entries(boardCopy));
-      boardState[square] = "X";
+      boardState[square] = HUMAN_MARKER;
       [eval, _] = miniMax(boardState, false, WAYS_TO_WIN);
       movesWithScores.push([eval, square]);
     });
-    // console.log(movesWithScores);
     return getMaxWithPosition(movesWithScores);
   } else {
     let movesWithScores = [];
     openSquares.forEach((square) => {
       let boardState = Object.fromEntries(Object.entries(boardCopy));
-      boardState[square] = "O";
+      boardState[square] = COMPUTER_MARKER;
       [eval, _] = miniMax(boardState, true, WAYS_TO_WIN);
       movesWithScores.push([eval, square]);
     });
-    // console.log(movesWithScores);
     return getMinWithPosition(movesWithScores);
   }
 };
@@ -362,9 +360,10 @@ const updateNumberOfGamesWon = (board, numberOfGamesWon) => {
       numberOfGamesWon["humanWins"] += 1;
     } else if (winner === COMPUTER_MARKER) {
       numberOfGamesWon["computerWins"] += 1;
-    } else if (isTie(board)) {
-      numberOfGamesWon["ties"] += 1;
     }
+  }
+  if (isTie(board)) {
+    numberOfGamesWon["ties"] += 1;
   }
 };
 
