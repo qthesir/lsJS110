@@ -12,6 +12,14 @@ const VALUE_OF_FACE_CARDS = 10;
 const MAX_VALUE_OF_ACE = 11;
 const MIN_VALUE_OF_ACE = 1;
 
+const shuffleCards = (deck) => {
+  for (let i = deck.length - 1; i >= 0; i--) {
+    let randomIndex = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[randomIndex]] = [deck[randomIndex], deck[i]];
+  }
+  return null;
+};
+
 const initializeDeck = () => {
   let deck = [];
   CARDS.forEach((card) => {
@@ -19,6 +27,9 @@ const initializeDeck = () => {
       deck.push({ value: card, suit: suit });
     });
   });
+
+  shuffleCards(deck);
+
   return deck;
 };
 
@@ -43,15 +54,13 @@ const displayHand = (playerHand, dealerHand, dealersTurn) => {
 // card being selected depends on how much of the card is left. May honestly be easier to just keep track of all
 // cards in the deck.
 
-const takeCardFromDeck = (randomIndex, deck) => {
-  return deck.splice(randomIndex, 1)[0];
+const takeCardFromDeck = (deck) => {
+  return deck.splice(deck.length - 1, 1)[0];
 };
 
 // I only want this function to do one thing... But its mutating 2 things
 const dealCard = (deck) => {
-  let randomIndex = Math.floor(Math.random() * deck.length);
-
-  return takeCardFromDeck(randomIndex, deck);
+  return takeCardFromDeck(deck);
 };
 
 const getPointsInHand = (hand) => {
