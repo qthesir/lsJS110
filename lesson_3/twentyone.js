@@ -85,7 +85,7 @@ const getPointsInHand = (hand) => {
   hand
     .filter((card) => card.value === "Ace")
     .forEach((_) => {
-      if (total + MAX_VALUE_OF_ACE > GOAL_POINTS) {
+      if (total + MAX_VALUE_OF_ACE >= GOAL_POINTS) {
         total = total + MIN_VALUE_OF_ACE;
       } else {
         total = total + MAX_VALUE_OF_ACE;
@@ -142,36 +142,71 @@ const playerTurn = (playerHand, dealerHand, deck) => {
 
 const dealerTurn = (playerHand, dealerHand, deck) => {
   while (true) {
-    prompt("Dealer is taking another card...");
-    dealerHand.push(dealCard(deck));
-    displayHand(playerHand, dealerHand, true);
+    prompt("");
     if (getPointsInHand(dealerHand) > DEALER_HIT_THRESHOLD) {
       break;
     }
+    prompt("Dealer is taking another card...");
+    dealerHand.push(dealCard(deck));
+    displayHand(playerHand, dealerHand, true);
   }
 };
 
-const determineWinner = (playerScore, dealerScore) => {
-  if (playerScore === dealerScore) {
+const determineWinner = (playerHand, dealerHand) => {
+  let playerScore = getPointsInHand(playerHand);
+  let dealerScore = getPointsInHand(dealerHand);
+
+  if (playerScore > GOAL_POINTS) {
+    return "player busted";
+  } else if (dealerScore > GOAL_POINTS) {
+    return "dealer busted";
+  } else if (playerScore === dealerScore) {
     return "tie";
+  } else if (playerScore > dealerScore) {
+    return "player";
+  } else if (dealerScore > playerScore) {
+    return "dealer";
   }
-  return playerScore > dealerScore ? "player" : "dealer";
 };
 
-const displayWinner = (playerScore, dealerScore) => {
-  if (determineWinner(playerScore, dealerScore) === "player") {
-    prompt(" ");
-    prompt(`You won! Your score: ${playerScore}`);
-    prompt(`Dealer score: ${dealerScore}`);
-  } else if (determineWinner(playerScore, dealerScore) === "dealer") {
-    prompt(" ");
-    prompt(`You lost. Try again next time! Your score: ${playerScore}`);
-    prompt(`Dealer score: ${dealerScore}`);
-  } else {
-    prompt(" ");
-    prompt(`Its a tie! Bet stays on the table. Your score: ${playerScore}`);
-    prompt(`Dealer score: ${dealerScore}`);
+const displayWinner = (playerHand, dealerHand) => {
+  switch (determineWinner(playerHand, dealerHand)) {
+    case "player busted":
+      prompt("");
+      prompt("You busted! Dealer wins.");
+      break;
+    case "dealer busted":
+      prompt("");
+      prompt("Dealer busted! You win");
+      break;
+    case "player":
+      prompt(" ");
+      prompt(`You won!`);
+      break;
+    case "dealer":
+      prompt(" ");
+      prompt(`Dealer wins. Try again next time!`);
+      break;
+    case "tie":
+      prompt(" ");
+      prompt(`Its a tie! Bet stays on the table.`);
+      break;
   }
+};
+
+const logFinalScore = (playerHand, dealerHand) => {
+  prompt("=====================================");
+  prompt(
+    `Dealer has ${dealerHand
+      .map((card) => card.value)
+      .join(", ")} for a total of: ${getPointsInHand(dealerHand)}`
+  );
+  prompt(
+    `Player has ${playerHand
+      .map((card) => card.value)
+      .join(", ")} for a total of: ${getPointsInHand(playerHand)}`
+  );
+  prompt("====================================");
 };
 
 const playAgain = () => {
@@ -200,34 +235,42 @@ while (true) {
 
   if (isBust(playerHand)) {
     prompt("");
-    displayHand(playerHand, dealerHand);
-    prompt("");
-    prompt("You busted! Dealer wins.");
+    displayHand(playerHand, dealerHand, true);
+    displayWinner(playerHand, dealerHand);
+    if (playAgain()) {
+      console.clear();
+      continue;
+    } else {
+      break;
+    }
+  } else {
+    prompt(`You stayed at ${getPointsInHand(playerHand)}`);
   }
 
-  if (!isBust(playerHand)) {
-    dealerTurn(playerHand, dealerHand, deck);
-  }
+  dealerTurn(playerHand, dealerHand, deck);
 
-  if (isBust(dealerHand) && !isBust(playerHand)) {
+  if (isBust(dealerHand)) {
     prompt("");
     displayHand(playerHand, dealerHand, true);
-    prompt("Dealer busted! You win");
+    displayWinner(playerHand, dealerHand);
+    if (playAgain()) {
+      console.clear();
+      continue;
+    } else {
+      break;
+    }
+  } else {
+    prompt(`Dealer stayed at ${getPointsInHand(dealerHand)}`);
   }
 
-  if (!isBust(playerHand) && !isBust(dealerHand)) {
-    let finalPlayerScore = getPointsInHand(playerHand);
-    let finalDealerScore = getPointsInHand(dealerHand);
-
-    displayWinner(finalPlayerScore, finalDealerScore);
-  }
+  logFinalScore(playerHand, dealerHand);
+  displayWinner(playerHand, dealerHand);
 
   if (!playAgain()) break;
 }
 
-
 // After reading the code of the LS solution, I'm realizing that I forgot about a key tool in my toolbelt:
-// The continue statement. This is why I had to do these weird conditionals in order to avoid continuing the 
+// The continue statement. This is why I had to do these weird conditionals in order to avoid continuing the
 // game after each iteration. The LS solution is just much easier to follow and read from a logical perspective:
 /*
 1. Player takes a turn, which happens until the player busts or stays 
@@ -240,4 +283,4 @@ while (true) {
 Thats it. Lot more easier to follow than my complicated if statements, which have to continually keep track of 
 who busted and who didn't. This is a significant refactor, but I think it will be worth it for my learning. 
 
-*/ 
+*/
