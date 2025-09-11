@@ -26,8 +26,15 @@ const prompt = (text) => {
   console.log(text);
 };
 
-const displayHand = (playerHand, dealerHand) => {
-  prompt(`Dealer has: ${dealerHand[0]["value"]} and Unknown`);
+const displayHand = (playerHand, dealerHand, dealersTurn) => {
+  if (!dealersTurn) {
+    prompt(`Dealer has: ${dealerHand[0]["value"]} and Unknown`);
+  } else if (dealersTurn) {
+    prompt(
+      `Dealer has: ${dealerHand.map((card) => card["value"]).join(" and ")}`
+    );
+  }
+
   prompt(`You have: ${playerHand.map((card) => card["value"]).join(" and ")}`);
 };
 
@@ -62,20 +69,17 @@ const getPointsInHand = (hand) => {
     }
   }, 0);
 
-  console.log({ totalWithoutAces });
-
   let total = totalWithoutAces;
 
   hand
     .filter((card) => card.value === "Ace")
     .forEach((_) => {
-      if (totalWithoutAces + MAX_VALUE_OF_ACE > 21) {
+      if (total + MAX_VALUE_OF_ACE > 21) {
         total = total + MIN_VALUE_OF_ACE;
       } else {
         total = total + MAX_VALUE_OF_ACE;
       }
     });
-  console.log({ totalWithoutAces, total });
 
   return total;
 };
@@ -102,7 +106,7 @@ const dealCards = (playerHand, dealerHand, deck) => {
 const playerTurn = (playerHand, dealerHand, deck) => {
   while (true) {
     prompt(" ");
-    displayHand(playerHand, dealerHand);
+    displayHand(playerHand, dealerHand, false);
     prompt(" ");
     prompt("Type h for hit and s for stay");
     let playerChoice = readlineSync.question();
@@ -116,32 +120,80 @@ const playerTurn = (playerHand, dealerHand, deck) => {
   return null;
 };
 
-const dealerTurn = () => {};
+const dealerTurn = (playerHand, dealerHand, deck) => {
+  while (true) {
+    prompt("Dealer is taking another card...");
+    displayHand(playerHand, dealerHand, true);
+    if (getPointsInHand(dealerHand) > 17) {
+      break;
+    }
 
-const playAgain = () => {};
+    dealerHand.push(dealCard(deck));
+  }
+};
+
+const determineWinner = (playerHand, dealerHand) => {
+  return getPointsInHand(playerHand) > getPointsInHand(dealerHand)
+    ? "player"
+    : "dealer";
+};
+
+const playAgain = () => {
+  prompt("Would you like to play again? Enter y for yes and n for no");
+  let playerResponse = readlineSync.question();
+
+  if (playerResponse.includes("y")) {
+    return true;
+  } else if (playerResponse.includes("n")) {
+    return false;
+  }
+};
 
 // Ok, so I need to keep track of game state here. Before, I did it with a board. But now does it make
 // sense to have an object that represents the player and the dealer? And what cards they have?
 
-let deck = initializeDeck();
+while (true) {
+  let deck = initializeDeck();
 
-// console.log(deck);
+  let playerHand = [];
+  let dealerHand = [];
 
-let playerHand = [];
-let dealerHand = [];
+  dealCards(playerHand, dealerHand, deck);
 
-dealCards(playerHand, dealerHand, deck);
+  playerTurn(playerHand, dealerHand, deck);
 
-// console.log(deck);
-// console.log(playerHand);
-// console.log(dealerHand);
+  if (isBust(playerHand)) {
+    prompt("");
+    displayHand(playerHand, dealerHand);
+    prompt("You busted! Dealer wins.");
+  }
 
-playerTurn(playerHand, dealerHand, deck);
+  if (!isBust(playerHand)) {
+    dealerTurn(playerHand, dealerHand, deck);
+  }
 
-if (isBust(playerHand)) {
-  prompt("");
-  displayHand(playerHand, dealerHand);
-  prompt("You busted! Dealer wins.");
+  if (isBust(dealerHand) && !isBust(playerHand)) {
+    prompt("");
+    displayHand(playerHand, dealerHand, true);
+    prompt("Dealer busted! You win");
+  }
+
+  if (!isBust(playerHand) && !isBust(dealerHand)) {
+    let finalPlayerScore = getPointsInHand(playerHand);
+    let finalDealerScore = getPointsInHand(dealerHand);
+
+    if (determineWinner(playerHand, dealerHand) === "player") {
+      prompt(" ");
+      prompt(`You won! Your score: ${finalPlayerScore}`);
+      prompt(`Dealer score: ${finalDealerScore}`);
+    } else {
+      prompt(" ");
+      prompt(`You lost. Try again next time! Your score: ${finalPlayerScore}`);
+      prompt(`Dealer score: ${finalDealerScore}`);
+    }
+  }
+
+  if (!playAgain()) {
+    break;
+  }
 }
-
-
