@@ -48,7 +48,7 @@ const dealCard = (deck) => {
 };
 
 const getPointsInHand = (hand) => {
-  return hand.reduce((total, card) => {
+  let totalWithoutAces = hand.reduce((total, card) => {
     if (typeof card.value === "number") {
       return total + card.value;
     } else if (
@@ -58,13 +58,26 @@ const getPointsInHand = (hand) => {
     ) {
       return total + VALUE_OF_FACE_CARDS;
     } else if (card.value === "Ace") {
-      if (total + MAX_VALUE_OF_ACE > 21) {
-        return total + MIN_VALUE_OF_ACE;
-      } else {
-        return total + MAX_VALUE_OF_ACE;
-      }
+      return total;
     }
   }, 0);
+
+  console.log({ totalWithoutAces });
+
+  let total = totalWithoutAces;
+
+  hand
+    .filter((card) => card.value === "Ace")
+    .forEach((_) => {
+      if (totalWithoutAces + MAX_VALUE_OF_ACE > 21) {
+        total = total + MIN_VALUE_OF_ACE;
+      } else {
+        total = total + MAX_VALUE_OF_ACE;
+      }
+    });
+  console.log({ totalWithoutAces, total });
+
+  return total;
 };
 
 const isBust = (hand) => {
@@ -88,7 +101,9 @@ const dealCards = (playerHand, dealerHand, deck) => {
 
 const playerTurn = (playerHand, dealerHand, deck) => {
   while (true) {
+    prompt(" ");
     displayHand(playerHand, dealerHand);
+    prompt(" ");
     prompt("Type h for hit and s for stay");
     let playerChoice = readlineSync.question();
     if (playerChoice === "h") {
@@ -110,16 +125,23 @@ const playAgain = () => {};
 
 let deck = initializeDeck();
 
-console.log(deck);
+// console.log(deck);
 
 let playerHand = [];
 let dealerHand = [];
 
 dealCards(playerHand, dealerHand, deck);
 
-console.log(deck);
-console.log(playerHand);
-console.log(dealerHand);
+// console.log(deck);
+// console.log(playerHand);
+// console.log(dealerHand);
 
 playerTurn(playerHand, dealerHand, deck);
+
+if (isBust(playerHand)) {
+  prompt("");
+  displayHand(playerHand, dealerHand);
+  prompt("You busted! Dealer wins.");
+}
+
 
