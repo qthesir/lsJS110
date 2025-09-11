@@ -192,6 +192,8 @@ const displayWinner = (playerHand, dealerHand) => {
       prompt(`Its a tie! Bet stays on the table.`);
       break;
   }
+
+  return null;
 };
 
 const logFinalScore = (playerHand, dealerHand) => {
@@ -268,6 +270,9 @@ while (true) {
 
   if (!playAgain()) break;
 }
+
+console.log("--------------------");
+console.log("Thanks for playing!");
 
 // After reading the code of the LS solution, I'm realizing that I forgot about a key tool in my toolbelt:
 // The continue statement. This is why I had to do these weird conditionals in order to avoid continuing the
