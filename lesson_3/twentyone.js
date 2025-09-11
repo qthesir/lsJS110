@@ -11,6 +11,8 @@ const NUMBER_OF_INITIAL_CARDS = 2;
 const VALUE_OF_FACE_CARDS = 10;
 const MAX_VALUE_OF_ACE = 11;
 const MIN_VALUE_OF_ACE = 1;
+const GOAL_POINTS = 21;
+const DEALER_HIT_THRESHOLD = 17;
 
 const shuffleCards = (deck) => {
   for (let i = deck.length - 1; i >= 0; i--) {
@@ -34,7 +36,7 @@ const initializeDeck = () => {
 };
 
 const prompt = (text) => {
-  console.log(text);
+  console.log(`=> ${text}`);
 };
 
 const displayHand = (playerHand, dealerHand, dealersTurn) => {
@@ -55,7 +57,7 @@ const displayHand = (playerHand, dealerHand, dealersTurn) => {
 // cards in the deck.
 
 const takeCardFromDeck = (deck) => {
-  return deck.splice(deck.length - 1, 1)[0];
+  return deck.pop();
 };
 
 // I only want this function to do one thing... But its mutating 2 things
@@ -83,7 +85,7 @@ const getPointsInHand = (hand) => {
   hand
     .filter((card) => card.value === "Ace")
     .forEach((_) => {
-      if (total + MAX_VALUE_OF_ACE > 21) {
+      if (total + MAX_VALUE_OF_ACE > GOAL_POINTS) {
         total = total + MIN_VALUE_OF_ACE;
       } else {
         total = total + MAX_VALUE_OF_ACE;
@@ -94,7 +96,7 @@ const getPointsInHand = (hand) => {
 };
 
 const isBust = (hand) => {
-  return getPointsInHand(hand) > 21;
+  return getPointsInHand(hand) > GOAL_POINTS;
 };
 
 // Main Functions
@@ -113,18 +115,27 @@ const dealCards = (playerHand, dealerHand, deck) => {
 // stop. So the bust check will have to be in an outer loop, checking for stay or hit.
 
 const playerTurn = (playerHand, dealerHand, deck) => {
+  prompt("");
   while (true) {
-    prompt(" ");
     displayHand(playerHand, dealerHand, false);
     prompt(" ");
-    prompt("Type h for hit and s for stay");
-    let playerChoice = readlineSync.question();
+    let playerChoice;
+
+    while (true) {
+      prompt("Type h for hit and s for stay");
+      playerChoice = readlineSync.question();
+      if (["h", "s"].includes(playerChoice)) {
+        break;
+      }
+      prompt("That is not a valid choice.");
+    }
+
     if (playerChoice === "h") {
+      prompt("You chose to hit!");
       playerHand.push(dealCard(deck));
     }
-    if (playerChoice === "s" || isBust(playerHand)) {
-      break;
-    }
+
+    if (playerChoice === "s" || isBust(playerHand)) break;
   }
   return null;
 };
@@ -132,19 +143,35 @@ const playerTurn = (playerHand, dealerHand, deck) => {
 const dealerTurn = (playerHand, dealerHand, deck) => {
   while (true) {
     prompt("Dealer is taking another card...");
+    dealerHand.push(dealCard(deck));
     displayHand(playerHand, dealerHand, true);
-    if (getPointsInHand(dealerHand) > 17) {
+    if (getPointsInHand(dealerHand) > DEALER_HIT_THRESHOLD) {
       break;
     }
-
-    dealerHand.push(dealCard(deck));
   }
 };
 
-const determineWinner = (playerHand, dealerHand) => {
-  return getPointsInHand(playerHand) > getPointsInHand(dealerHand)
-    ? "player"
-    : "dealer";
+const determineWinner = (playerScore, dealerScore) => {
+  if (playerScore === dealerScore) {
+    return "tie";
+  }
+  return playerScore > dealerScore ? "player" : "dealer";
+};
+
+const displayWinner = (playerScore, dealerScore) => {
+  if (determineWinner(playerScore, dealerScore) === "player") {
+    prompt(" ");
+    prompt(`You won! Your score: ${playerScore}`);
+    prompt(`Dealer score: ${dealerScore}`);
+  } else if (determineWinner(playerScore, dealerScore) === "dealer") {
+    prompt(" ");
+    prompt(`You lost. Try again next time! Your score: ${playerScore}`);
+    prompt(`Dealer score: ${dealerScore}`);
+  } else {
+    prompt(" ");
+    prompt(`Its a tie! Bet stays on the table. Your score: ${playerScore}`);
+    prompt(`Dealer score: ${dealerScore}`);
+  }
 };
 
 const playAgain = () => {
@@ -174,6 +201,7 @@ while (true) {
   if (isBust(playerHand)) {
     prompt("");
     displayHand(playerHand, dealerHand);
+    prompt("");
     prompt("You busted! Dealer wins.");
   }
 
@@ -191,18 +219,25 @@ while (true) {
     let finalPlayerScore = getPointsInHand(playerHand);
     let finalDealerScore = getPointsInHand(dealerHand);
 
-    if (determineWinner(playerHand, dealerHand) === "player") {
-      prompt(" ");
-      prompt(`You won! Your score: ${finalPlayerScore}`);
-      prompt(`Dealer score: ${finalDealerScore}`);
-    } else {
-      prompt(" ");
-      prompt(`You lost. Try again next time! Your score: ${finalPlayerScore}`);
-      prompt(`Dealer score: ${finalDealerScore}`);
-    }
+    displayWinner(finalPlayerScore, finalDealerScore);
   }
 
-  if (!playAgain()) {
-    break;
-  }
+  if (!playAgain()) break;
 }
+
+
+// After reading the code of the LS solution, I'm realizing that I forgot about a key tool in my toolbelt:
+// The continue statement. This is why I had to do these weird conditionals in order to avoid continuing the 
+// game after each iteration. The LS solution is just much easier to follow and read from a logical perspective:
+/*
+1. Player takes a turn, which happens until the player busts or stays 
+2. Check condition of the game. If the game has ended, do the playAgain logic and use the continue statement to reset the loop if its true.
+3. Dealer plays 
+4. Check the condition of the game again. if it has ended, run the same logic.
+5. Log the final score
+6. Display the game result 
+
+Thats it. Lot more easier to follow than my complicated if statements, which have to continually keep track of 
+who busted and who didn't. This is a significant refactor, but I think it will be worth it for my learning. 
+
+*/ 
