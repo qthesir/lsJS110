@@ -247,12 +247,18 @@ const displayGrandChampion = (numberOfGamesWon) => {
 
 const playAgain = () => {
   prompt("Would you like to play again? Enter y for yes and n for no");
-  let playerResponse = readlineSync.question();
-
-  if (playerResponse.includes("y")) {
-    return true;
-  } else if (playerResponse.includes("n")) {
-    return false;
+  let userResponse = readlineSync.question().trim().toLowerCase();
+  while (true) {
+    if (userResponse.includes("y") && userResponse.length <= 3) {
+      return true;
+    } else if (userResponse.includes("n") && userResponse.length <= 3) {
+      return false;
+    } else {
+      prompt(
+        "Invalid input. Would you like to play again? Enter y for yes, n for no"
+      );
+      userResponse = readlineSync.question().trim().toLowerCase();
+    }
   }
 };
 
