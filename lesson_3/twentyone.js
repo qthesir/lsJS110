@@ -13,6 +13,7 @@ const MAX_VALUE_OF_ACE = 11;
 const MIN_VALUE_OF_ACE = 1;
 const GOAL_POINTS = 21;
 const DEALER_HIT_THRESHOLD = 17;
+const NUMBER_OF_GAMES_TO_WIN_MATCH = 3;
 
 const shuffleCards = (deck) => {
   for (let i = deck.length - 1; i >= 0; i--) {
@@ -83,7 +84,7 @@ const getPointsInHand = (hand) => {
   hand
     .filter((card) => card.value === "Ace")
     .forEach((_) => {
-      if (total + MAX_VALUE_OF_ACE >= GOAL_POINTS) {
+      if (total + MAX_VALUE_OF_ACE > GOAL_POINTS) {
         total = total + MIN_VALUE_OF_ACE;
       } else {
         total = total + MAX_VALUE_OF_ACE;
@@ -180,11 +181,33 @@ const displayWinner = (playerScore, dealerScore) => {
       break;
     case "dealer":
       prompt(" ");
-      prompt(`Dealer wins. Try again next time!`);
+      prompt(`Dealer wins.`);
       break;
     case "tie":
       prompt(" ");
-      prompt(`Its a tie! Bet stays on the table.`);
+      prompt(`Its a tie!`);
+      break;
+  }
+
+  return null;
+};
+
+const updateNumberOfGamesWon = (numberOfGamesWon, playerScore, dealerScore) => {
+  switch (determineWinner(playerScore, dealerScore)) {
+    case "player busted":
+      numberOfGamesWon["dealer"] += 1;
+      break;
+    case "dealer busted":
+      numberOfGamesWon["player"] += 1;
+      break;
+    case "player":
+      numberOfGamesWon["player"] += 1;
+      break;
+    case "dealer":
+      numberOfGamesWon["dealer"] += 1;
+      break;
+    case "tie":
+      numberOfGamesWon["ties"] += 1;
       break;
   }
 
@@ -203,7 +226,23 @@ const logFinalScore = (playerHand, dealerHand, playerScore, dealerScore) => {
       .map((card) => card.value)
       .join(", ")} for a total of: ${playerScore}`
   );
-  prompt("====================================");
+  prompt("=====================================");
+};
+
+const displayRoundScore = (numberOfGamesWon) => {
+  prompt("----------------------------");
+  prompt(`Player wins: ${numberOfGamesWon["player"]}`);
+  prompt(`Dealer wins: ${numberOfGamesWon["dealer"]}`);
+  prompt(`Ties: ${numberOfGamesWon["ties"]}`);
+  prompt("----------------------------");
+};
+
+const displayGrandChampion = (numberOfGamesWon) => {
+  if (numberOfGamesWon["player"] >= NUMBER_OF_GAMES_TO_WIN_MATCH) {
+    prompt("Congratulations! You are the grand champion.");
+  } else if (numberOfGamesWon["dealer"] >= NUMBER_OF_GAMES_TO_WIN_MATCH) {
+    prompt("Dealer has won 3 games and is the grand champion.");
+  }
 };
 
 const playAgain = () => {
@@ -221,56 +260,80 @@ const playAgain = () => {
 // sense to have an object that represents the player and the dealer? And what cards they have?
 
 while (true) {
-  let deck = initializeDeck();
+  let numberOfGamesWon = {
+    player: 0,
+    dealer: 0,
+    ties: 0,
+  };
 
-  let playerHand = [];
-  let dealerHand = [];
+  while (true) {
+    let deck = initializeDeck();
 
-  dealCards(playerHand, dealerHand, deck);
+    let playerHand = [];
+    let dealerHand = [];
 
-  playerTurn(playerHand, dealerHand, deck);
+    dealCards(playerHand, dealerHand, deck);
 
-  let playerScore = getPointsInHand(playerHand);
-  let dealerScore = getPointsInHand(dealerHand);
+    playerTurn(playerHand, dealerHand, deck);
 
-  if (isBust(playerScore)) {
-    prompt("");
-    displayHand(playerHand, dealerHand, true);
-    displayWinner(playerScore, dealerScore);
-    if (playAgain()) {
-      console.clear();
+    let playerScore = getPointsInHand(playerHand);
+    let dealerScore = getPointsInHand(dealerHand);
+
+    if (isBust(playerScore)) {
+      prompt("");
+      logFinalScore(playerHand, dealerHand, playerScore, dealerScore);
+      displayWinner(playerScore, dealerScore);
+
+      // round logic
+      updateNumberOfGamesWon(numberOfGamesWon, playerScore, dealerScore);
+      displayRoundScore(numberOfGamesWon);
+      if (numberOfGamesWon["dealer"] >= NUMBER_OF_GAMES_TO_WIN_MATCH) {
+        displayGrandChampion(numberOfGamesWon);
+        break;
+      }
       continue;
     } else {
-      break;
+      prompt(`You stayed at ${playerScore}`);
     }
-  } else {
-    prompt(`You stayed at ${playerScore}`);
-  }
 
-  dealerTurn(playerHand, dealerHand, deck);
+    dealerTurn(playerHand, dealerHand, deck);
 
-  dealerScore = getPointsInHand(dealerHand);
+    dealerScore = getPointsInHand(dealerHand);
 
-  if (isBust(dealerScore)) {
-    prompt("");
-    displayHand(playerHand, dealerHand, true);
-    displayWinner(playerScore, dealerScore);
-    if (playAgain()) {
-      console.clear();
+    if (isBust(dealerScore)) {
+      prompt("");
+      logFinalScore(playerHand, dealerHand, playerScore, dealerScore);
+      displayWinner(playerScore, dealerScore);
+
+      // Round logic
+      updateNumberOfGamesWon(numberOfGamesWon, playerScore, dealerScore);
+      displayRoundScore(numberOfGamesWon);
+      if (numberOfGamesWon["player"] >= NUMBER_OF_GAMES_TO_WIN_MATCH) {
+        displayGrandChampion(numberOfGamesWon);
+        break;
+      }
       continue;
     } else {
+      prompt(`Dealer stayed at ${dealerScore}`);
+    }
+
+    logFinalScore(playerHand, dealerHand, playerScore, dealerScore);
+    displayWinner(playerScore, dealerScore);
+
+    // Round logic
+    updateNumberOfGamesWon(numberOfGamesWon, playerScore, dealerScore);
+    displayRoundScore(numberOfGamesWon);
+    if (
+      numberOfGamesWon["player"] >= NUMBER_OF_GAMES_TO_WIN_MATCH ||
+      numberOfGamesWon["dealer"] >= NUMBER_OF_GAMES_TO_WIN_MATCH
+    ) {
+      displayGrandChampion(numberOfGamesWon);
       break;
     }
-  } else {
-    prompt(`Dealer stayed at ${dealerScore}`);
   }
-
-  logFinalScore(playerHand, dealerHand, playerScore, dealerScore);
-  displayWinner(playerScore, dealerScore);
 
   if (!playAgain()) break;
 }
-
 console.log("--------------------");
 console.log("Thanks for playing!");
 
@@ -288,4 +351,13 @@ console.log("Thanks for playing!");
 Thats it. Lot more easier to follow than my complicated if statements, which have to continually keep track of 
 who busted and who didn't. This is a significant refactor, but I think it will be worth it for my learning. 
 
+Starting to understand the concept of caching now... Saving a calculation for later use. But what does an 
+intelligent caching system look like in a production system? In principle, you are storing the calculation in 
+a variable... But is that actually how people "cache"? Is that all it is? 
+
+Answering the question: What is different about how playAgain is used after the dealer or player busts, and at
+the end of the loop? The difference is that when the player bust and dealer bust, we use the "continue" statement
+to play again in order to skip the remainder of the code and start from the top of the loop. This is unnescessary 
+at the end of the loop, because if the user chooses to play again, the loop will continue as there is no code
+left to execute. 
 */
