@@ -50,16 +50,10 @@ const displayHand = (playerHand, dealerHand, dealersTurn) => {
   prompt(`You have: ${playerHand.map((card) => card["value"]).join(", ")}`);
 };
 
-// Shoot... I also have to weight the cards by the amount thats left, in order to make the deal reflective of
-// the number of cards in the deck. Duh. Not just pick a random card, then decrement. The probability of the
-// card being selected depends on how much of the card is left. May honestly be easier to just keep track of all
-// cards in the deck.
-
 const takeCardFromDeck = (deck) => {
   return deck.pop();
 };
 
-// I only want this function to do one thing... But its mutating 2 things
 const dealCard = (deck) => {
   return takeCardFromDeck(deck);
 };
@@ -107,11 +101,6 @@ const dealCards = (playerHand, dealerHand, deck) => {
   }
   return null;
 };
-
-// Ok, thinking through the playerTurn... The player has two choices: Hit or stay, based on whats been displayed.
-// They can hit as many times as they want until they bust. So their turn will continue until they stay or bust.
-// The bust will also cause a special thing to happen... The player will immediately lose. The entire game will
-// stop. So the bust check will have to be in an outer loop, checking for stay or hit.
 
 const playerTurn = (playerHand, dealerHand, deck) => {
   prompt("");
@@ -245,6 +234,29 @@ const displayGrandChampion = (numberOfGamesWon) => {
   }
 };
 
+const displayRoundEnd = (
+  numberOfGamesWon,
+  playerHand,
+  dealerHand,
+  playerScore,
+  dealerScore
+) => {
+  prompt("");
+  logFinalScore(playerHand, dealerHand, playerScore, dealerScore);
+  displayWinner(playerScore, dealerScore);
+  displayRoundScore(numberOfGamesWon);
+  if (isMatchComplete) {
+    displayGrandChampion(numberOfGamesWon);
+  }
+};
+
+const isMatchComplete = (numberOfGamesWon) => {
+  return (
+    numberOfGamesWon["player"] >= NUMBER_OF_GAMES_TO_WIN_MATCH ||
+    numberOfGamesWon["dealer"] >= NUMBER_OF_GAMES_TO_WIN_MATCH
+  );
+};
+
 const playAgain = () => {
   prompt("Would you like to play again? Enter y for yes and n for no");
   let userResponse = readlineSync.question().trim().toLowerCase();
@@ -261,9 +273,6 @@ const playAgain = () => {
     }
   }
 };
-
-// Ok, so I need to keep track of game state here. Before, I did it with a board. But now does it make
-// sense to have an object that represents the player and the dealer? And what cards they have?
 
 while (true) {
   let numberOfGamesWon = {
@@ -286,17 +295,15 @@ while (true) {
     let dealerScore = getPointsInHand(dealerHand);
 
     if (isBust(playerScore)) {
-      prompt("");
-      logFinalScore(playerHand, dealerHand, playerScore, dealerScore);
-      displayWinner(playerScore, dealerScore);
-
-      // round logic
       updateNumberOfGamesWon(numberOfGamesWon, playerScore, dealerScore);
-      displayRoundScore(numberOfGamesWon);
-      if (numberOfGamesWon["dealer"] >= NUMBER_OF_GAMES_TO_WIN_MATCH) {
-        displayGrandChampion(numberOfGamesWon);
-        break;
-      }
+      displayRoundEnd(
+        numberOfGamesWon,
+        playerHand,
+        dealerHand,
+        playerScore,
+        dealerScore
+      );
+      if (isMatchComplete(numberOfGamesWon)) break;
       continue;
     } else {
       prompt(`You stayed at ${playerScore}`);
@@ -307,35 +314,29 @@ while (true) {
     dealerScore = getPointsInHand(dealerHand);
 
     if (isBust(dealerScore)) {
-      prompt("");
-      logFinalScore(playerHand, dealerHand, playerScore, dealerScore);
-      displayWinner(playerScore, dealerScore);
-
-      // Round logic
       updateNumberOfGamesWon(numberOfGamesWon, playerScore, dealerScore);
-      displayRoundScore(numberOfGamesWon);
-      if (numberOfGamesWon["player"] >= NUMBER_OF_GAMES_TO_WIN_MATCH) {
-        displayGrandChampion(numberOfGamesWon);
-        break;
-      }
+      displayRoundEnd(
+        numberOfGamesWon,
+        playerHand,
+        dealerHand,
+        playerScore,
+        dealerScore
+      );
+      if (isMatchComplete(numberOfGamesWon)) break;
       continue;
     } else {
       prompt(`Dealer stayed at ${dealerScore}`);
     }
 
-    logFinalScore(playerHand, dealerHand, playerScore, dealerScore);
-    displayWinner(playerScore, dealerScore);
-
-    // Round logic
     updateNumberOfGamesWon(numberOfGamesWon, playerScore, dealerScore);
-    displayRoundScore(numberOfGamesWon);
-    if (
-      numberOfGamesWon["player"] >= NUMBER_OF_GAMES_TO_WIN_MATCH ||
-      numberOfGamesWon["dealer"] >= NUMBER_OF_GAMES_TO_WIN_MATCH
-    ) {
-      displayGrandChampion(numberOfGamesWon);
-      break;
-    }
+    displayRoundEnd(
+      numberOfGamesWon,
+      playerHand,
+      dealerHand,
+      playerScore,
+      dealerScore
+    );
+    if (isMatchComplete(numberOfGamesWon)) break;
   }
 
   if (!playAgain()) break;
@@ -366,4 +367,8 @@ the end of the loop? The difference is that when the player bust and dealer bust
 to play again in order to skip the remainder of the code and start from the top of the loop. This is unnescessary 
 at the end of the loop, because if the user chooses to play again, the loop will continue as there is no code
 left to execute. 
+
+LSbot had a good suggestion: I am repeating the same steps after the end of every round. Not code steps, but
+I'm calling the same function. This is a good opportunity to abstract this and create a singular function that 
+handles the end of every round. 
 */
