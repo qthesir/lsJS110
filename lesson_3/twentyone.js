@@ -245,7 +245,7 @@ const displayRoundEnd = (
   logFinalScore(playerHand, dealerHand, playerScore, dealerScore);
   displayWinner(playerScore, dealerScore);
   displayRoundScore(numberOfGamesWon);
-  if (isMatchComplete) {
+  if (isMatchComplete(numberOfGamesWon)) {
     displayGrandChampion(numberOfGamesWon);
   }
 };
