@@ -43,12 +43,10 @@ const displayHand = (playerHand, dealerHand, dealersTurn) => {
   if (!dealersTurn) {
     prompt(`Dealer has: ${dealerHand[0]["value"]} and Unknown`);
   } else if (dealersTurn) {
-    prompt(
-      `Dealer has: ${dealerHand.map((card) => card["value"]).join(" and ")}`
-    );
+    prompt(`Dealer has: ${dealerHand.map((card) => card["value"]).join(", ")}`);
   }
 
-  prompt(`You have: ${playerHand.map((card) => card["value"]).join(" and ")}`);
+  prompt(`You have: ${playerHand.map((card) => card["value"]).join(", ")}`);
 };
 
 // Shoot... I also have to weight the cards by the amount thats left, in order to make the deal reflective of
@@ -95,8 +93,8 @@ const getPointsInHand = (hand) => {
   return total;
 };
 
-const isBust = (hand) => {
-  return getPointsInHand(hand) > GOAL_POINTS;
+const isBust = (score) => {
+  return score > GOAL_POINTS;
 };
 
 // Main Functions
@@ -135,7 +133,7 @@ const playerTurn = (playerHand, dealerHand, deck) => {
       playerHand.push(dealCard(deck));
     }
 
-    if (playerChoice === "s" || isBust(playerHand)) break;
+    if (playerChoice === "s" || isBust(getPointsInHand(playerHand))) break;
   }
   return null;
 };
@@ -152,10 +150,7 @@ const dealerTurn = (playerHand, dealerHand, deck) => {
   }
 };
 
-const determineWinner = (playerHand, dealerHand) => {
-  let playerScore = getPointsInHand(playerHand);
-  let dealerScore = getPointsInHand(dealerHand);
-
+const determineWinner = (playerScore, dealerScore) => {
   if (playerScore > GOAL_POINTS) {
     return "player busted";
   } else if (dealerScore > GOAL_POINTS) {
@@ -169,8 +164,8 @@ const determineWinner = (playerHand, dealerHand) => {
   }
 };
 
-const displayWinner = (playerHand, dealerHand) => {
-  switch (determineWinner(playerHand, dealerHand)) {
+const displayWinner = (playerScore, dealerScore) => {
+  switch (determineWinner(playerScore, dealerScore)) {
     case "player busted":
       prompt("");
       prompt("You busted! Dealer wins.");
@@ -196,17 +191,17 @@ const displayWinner = (playerHand, dealerHand) => {
   return null;
 };
 
-const logFinalScore = (playerHand, dealerHand) => {
+const logFinalScore = (playerHand, dealerHand, playerScore, dealerScore) => {
   prompt("=====================================");
   prompt(
     `Dealer has ${dealerHand
       .map((card) => card.value)
-      .join(", ")} for a total of: ${getPointsInHand(dealerHand)}`
+      .join(", ")} for a total of: ${dealerScore}`
   );
   prompt(
     `Player has ${playerHand
       .map((card) => card.value)
-      .join(", ")} for a total of: ${getPointsInHand(playerHand)}`
+      .join(", ")} for a total of: ${playerScore}`
   );
   prompt("====================================");
 };
@@ -235,10 +230,13 @@ while (true) {
 
   playerTurn(playerHand, dealerHand, deck);
 
-  if (isBust(playerHand)) {
+  let playerScore = getPointsInHand(playerHand);
+  let dealerScore = getPointsInHand(dealerHand);
+
+  if (isBust(playerScore)) {
     prompt("");
     displayHand(playerHand, dealerHand, true);
-    displayWinner(playerHand, dealerHand);
+    displayWinner(playerScore, dealerScore);
     if (playAgain()) {
       console.clear();
       continue;
@@ -246,15 +244,17 @@ while (true) {
       break;
     }
   } else {
-    prompt(`You stayed at ${getPointsInHand(playerHand)}`);
+    prompt(`You stayed at ${playerScore}`);
   }
 
   dealerTurn(playerHand, dealerHand, deck);
 
-  if (isBust(dealerHand)) {
+  dealerScore = getPointsInHand(dealerHand);
+
+  if (isBust(dealerScore)) {
     prompt("");
     displayHand(playerHand, dealerHand, true);
-    displayWinner(playerHand, dealerHand);
+    displayWinner(playerScore, dealerScore);
     if (playAgain()) {
       console.clear();
       continue;
@@ -262,11 +262,11 @@ while (true) {
       break;
     }
   } else {
-    prompt(`Dealer stayed at ${getPointsInHand(dealerHand)}`);
+    prompt(`Dealer stayed at ${dealerScore}`);
   }
 
-  logFinalScore(playerHand, dealerHand);
-  displayWinner(playerHand, dealerHand);
+  logFinalScore(playerHand, dealerHand, playerScore, dealerScore);
+  displayWinner(playerScore, dealerScore);
 
   if (!playAgain()) break;
 }
