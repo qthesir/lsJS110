@@ -108,6 +108,10 @@ const rotateArray = (array) => {
   return [...array.slice(1), array[0]];
 };
 
+const rotateStr = (str) => {
+  return str.slice(1) + str[0];
+};
+
 const rotateRightmostDigits = (target, lastDigitsToRotate) => {
   let digitArr = String(target).split("");
 
@@ -141,6 +145,23 @@ const rotateRightmostDigitsWithNoStringConversion = (
   return fancyArrayToNum(arrayWithRotatedLastDigits);
 };
 
+const rotateRightmostDigitsWithStringOnly = (target, lastDigitsToRotate) => {
+  let digitStr = String(target);
+
+  if (lastDigitsToRotate >= digitStr.length) {
+    return Number(rotateStr(digitStr));
+  }
+
+  let firstPart = digitStr.slice(0, digitStr.length - lastDigitsToRotate);
+  let secondPart = rotateStr(
+    digitStr.slice(digitStr.length - lastDigitsToRotate)
+  );
+
+  let resultStr = firstPart + secondPart;
+
+  return Number(resultStr);
+};
+
 console.log(rotateRightmostDigits(735291, 1)); // 735291
 console.log(rotateRightmostDigits(735291, 2)); // 735219
 console.log(rotateRightmostDigits(735291, 3)); // 735912
@@ -159,10 +180,24 @@ console.log(rotateRightmostDigitsWithNoStringConversion(735291, 4)); // 732915
 console.log(rotateRightmostDigitsWithNoStringConversion(735291, 5)); // 752913
 console.log(rotateRightmostDigitsWithNoStringConversion(735291, 6)); // 352917
 console.log(rotateRightmostDigitsWithNoStringConversion(735291, 7)); // 352917
+
+console.log("------- String only ----------");
+
+console.log(rotateRightmostDigitsWithStringOnly(735291, 1)); // 735291
+console.log(rotateRightmostDigitsWithStringOnly(735291, 2)); // 735219
+console.log(rotateRightmostDigitsWithStringOnly(735291, 3)); // 735912
+console.log(rotateRightmostDigitsWithStringOnly(735291, 4)); // 732915
+console.log(rotateRightmostDigitsWithStringOnly(735291, 5)); // 752913
+console.log(rotateRightmostDigitsWithStringOnly(735291, 6)); // 352917
+console.log(rotateRightmostDigitsWithStringOnly(735291, 7)); // 352917
 /*
 - Noticing that its becoming easier to just start writing code. Before it would take all this time. Now, I can get
 into it more easily. 
 
 - For difficult to describe things, like this rotation, or the arguments of this rotation, I am seeing the benefit
-of giving something a name. It is much easier to reason about it once I have named the thing, at least in english. 
+of giving something a name. It is much easier to reason about it once I have named the thing, at least in english.
+
+After reading the LS solution - this is the 3rd or 4th time I've done this. Converted into an array and used 
+array operations when I could have simply used strings. Going forward, I should consider keeping the manipulation
+in the form of a string, because turning it into an Array is more expensive. If I don't have to, that is. 
 */
