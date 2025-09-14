@@ -56,7 +56,7 @@ Algorithm
 
 
 Hmmm... Maybe an edge case here for the case where the array is empty. If you set the value of an element in an empty array, it will be undefined,
-and now the array has 1 element "undefined" instead of 0. So you need to 
+and now the array has 1 element "undefined" instead of 0.
 */
 
 // Code with intent
@@ -73,12 +73,15 @@ const rotateArray = (array) => {
   let arrCopy = [...array];
   arrCopy.push(arrCopy.shift());
 
-  // Reasone the above works is because the .shift is called first and returns a 
-  // value to .push, which .push then pushes to the end of the array, which is now
-  // shorter. This is still kind of messy... its unclear whats happening in memory, because the .push was called on 
-  // the array before it was mutated and then .shift mutates it. Going to ask grok. 
-
   return arrCopy;
+};
+
+const rotateArray2 = (array) => {
+  if (!Array.isArray(array)) return undefined;
+
+  if (array.length === 0) return [];
+
+  return [...array.slice(1), array[0]];
 };
 
 console.log(rotateArray([7, 3, 5, 2, 9, 1])); // [3, 5, 2, 9, 1, 7]
@@ -96,3 +99,17 @@ console.log(rotateArray(1)); // undefined
 let array = [1, 2, 3, 4];
 console.log(rotateArray(array)); // [2, 3, 4, 1]
 console.log(array); // [1, 2, 3, 4]
+
+console.log(rotateArray2([7, 3, 5, 2, 9, 1])); // [3, 5, 2, 9, 1, 7]
+console.log(rotateArray2(["a", "b", "c"])); // ["b", "c", "a"]
+console.log(rotateArray2(["a"])); // ["a"]
+console.log(rotateArray2([1, "a", 3, "c"])); // ["a", 3, "c", 1]
+console.log(rotateArray2([{ a: 2 }, [1, 2], 3])); // [[1, 2], 3, { a: 2 }]
+console.log(rotateArray2([])); // []
+
+/*
+Learned a couple things thinking about how the arrCopy.push(arrCopy.shift()) works under the hood. The way I understand it, is that 
+the arrCopy.push() is pushed onto the call stack, but is not evaluated, and then arrCopy.shift() is pushed onto the call stack. 
+arrCopy.shift() is evaluated and the value returned, which mutates arrCopy. Now, arrCopy.push() is evaluated, and the arrCopy push 
+is calling is the now mutated array from .shift(). 
+*/
