@@ -200,4 +200,8 @@ of giving something a name. It is much easier to reason about it once I have nam
 After reading the LS solution - this is the 3rd or 4th time I've done this. Converted into an array and used 
 array operations when I could have simply used strings. Going forward, I should consider keeping the manipulation
 in the form of a string, because turning it into an Array is more expensive. If I don't have to, that is. 
+
+Upon reviewing the community solutions, it seems like splice might have been the better option here, because you
+can indicate the precise index you want to extract the number from, and then put it on the end of the array. 
+This is the most efficient, least lines of code, and most readable way to solve this problem IMO. 
 */
