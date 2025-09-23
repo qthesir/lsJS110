@@ -66,9 +66,7 @@ const sum = (partialArray) => {
 };
 
 const sumOfSums = (numArray) => {
-  return numArray.reduce((acc, _, index, array) => {
-    return acc + sum(array.slice(0, index + 1));
-  }, 0);
+  return numArray.reduce((acc, _, index, array) => acc + sum(array.slice(0, index + 1)))
 };
 
 // Examples
