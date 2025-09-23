@@ -123,7 +123,7 @@ const minilang = (stringOfCommands) => {
     ) {
       throw "Command is not valid.";
     }
-    
+
     if (
       String(Number(command)) === "NaN" &&
       command !== "PUSH" &&
@@ -214,5 +214,9 @@ and then the operation needs to be performed on the stack and register according
 use a switch statement, who's default is to ue a number, and the number is put into the register. The commands could either be 
 helpers or just operate on the stack / register directly, depending on their complexity. The program could split the string by spaces
 and loop through the resulting array, addressing each of the commands in sequence. 
+
+On reading the LS solution, it would seem that, as opposed to adding the error handling up top, its better to add it in the 
+individual cases, since the logic is more self-contained and easier to read. This is in fact true. It is defo easier to read, as
+opposed to coming up with a general solution to reduce code. My code "smells" bad you could say, but the code written by LS does not.
 
 */
