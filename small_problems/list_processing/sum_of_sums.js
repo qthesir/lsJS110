@@ -62,9 +62,7 @@ Sum the value from 0 to the current index
 // Code with intent
 
 const sum = (partialArray) => {
-  return partialArray.reduce((acc, cv) => {
-    return acc + cv;
-  }, 0);
+  return partialArray.reduce((acc, cv) => acc + cv)
 };
 
 const sumOfSums = (numArray) => {
@@ -79,3 +77,6 @@ console.log(sumOfSums([3, 5, 2])); // (3) + (3 + 5) + (3 + 5 + 2) --> 21
 console.log(sumOfSums([1, 5, 7, 3])); // (1) + (1 + 5) + (1 + 5 + 7) + (1 + 5 + 7 + 3) --> 36
 console.log(sumOfSums([4])); // 4
 console.log(sumOfSums([1, 2, 3, 4, 5])); // 35
+
+// The use of .map in one of the solutions is interesting. It does make sense to, since 
+// you are creating a new value for each element. 
