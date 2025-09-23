@@ -82,6 +82,26 @@ const buyFruit2 = (groceryList) => {
   return individualItems.flat();
 };
 
+const buyFruit3 = (groceryList) => {
+  return groceryList.flatMap((grocery) => {
+    const fruitName = grocery[0];
+    const quantity = grocery[1];
+    return Array(quantity).fill(fruitName);
+  });
+};
+
+const buyFruit4 = (groceryList) => {
+  return groceryList
+    .map((grocery) => {
+      const fruitName = grocery[0];
+      const quantity = grocery[1];
+      return Array(quantity).fill(fruitName);
+    })
+    .reduce((individualItemsArray, groceries) =>
+      individualItemsArray.concat(groceries)
+    );
+};
+
 // Example:
 
 console.log(
@@ -100,9 +120,29 @@ console.log(
   ])
 );
 
+console.log(
+  buyFruit3([
+    ["apple", 3],
+    ["orange", 1],
+    ["banana", 2],
+  ])
+);
+
+console.log(
+  buyFruit4([
+    ["apple", 3],
+    ["orange", 1],
+    ["banana", 2],
+  ])
+);
+
 // returns ["apple", "apple", "apple", "orange", "banana", "banana"]
 
 /*
 Notes and reflection
 Could be a good opportunity for flatmap here...
+
+I like my solution, because its concise, and even posted it! But the ls solution, frankly, is a bit 
+more readable. It has a "repeat" helper function that returns an array of repeated values, and 
+then uses .reduce to flatten them but concatenating each array 
 */
