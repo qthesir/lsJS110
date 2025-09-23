@@ -13,7 +13,8 @@ ADD : Pop a value from the stack and add it to the register value, storing the r
 SUB : Pop a value from the stack and subtract it from the register value, storing the result in the register.
 MULT : Pop a value from the stack and multiply it by the register value, storing the result in the register.
 DIV : Pop a value from the stack and divide the register value by the popped stack value, storing the integer result back in the register.
-REMAINDER : Pop a value from the stack and divide the register value by the popped stack value, storing the integer remainder of the division back in the register.
+REMAINDER : Pop a value from the stack and divide the register value by the popped stack value, storing the integer remainder of 
+the division back in the register.
 POP : Remove the topmost item from the stack and place it in the register.
 PRINT : Print the register value.
 All operations are integer operations (which is only important with DIV and REMAINDER).
