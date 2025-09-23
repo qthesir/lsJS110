@@ -99,11 +99,40 @@ If the command is PRINT
 */
 
 // Code with intent
+
+const VALID_COMMANDS = [
+  "PUSH",
+  "POP",
+  "ADD",
+  "DIV",
+  "MULT",
+  "PRINT",
+  "REMAINDER",
+  "SUB",
+];
+
 const minilang = (stringOfCommands) => {
   let arrayOfCommands = stringOfCommands.split(" ");
   let register = 0;
   let stack = [];
   arrayOfCommands.forEach((command) => {
+   
+    if (
+      String(Number(command)) === "NaN" &&
+      !VALID_COMMANDS.includes(command)
+    ) {
+      throw "Command is not valid.";
+    }
+    
+    if (
+      String(Number(command)) === "NaN" &&
+      command !== "PUSH" &&
+      command !== "PRINT" &&
+      stack.length === 0
+    ) {
+      throw "Command cannot be executed. Nothing on the stack";
+    }
+
     switch (command) {
       case "PUSH":
         stack.push(register);
@@ -138,36 +167,38 @@ const minilang = (stringOfCommands) => {
 
 // Examples
 // minilang("PRINT");
-// // 0
+// // // 0
 
 // minilang("5 PUSH 3 MULT PRINT");
-// // 15
+// // // 15
 
 // minilang("5 PRINT PUSH 3 PRINT ADD PRINT");
-// // 5
-// // 3
-// // 8
+// // // 5
+// // // 3
+// // // 8
 
 // minilang("5 PUSH POP PRINT");
-// // 5
+// // // 5
 
 // minilang("3 PUSH 4 PUSH 5 PUSH PRINT ADD PRINT POP PRINT ADD PRINT");
-// // 5
-// // 10
-// // 4
-// // 7
+// // // 5
+// // // 10
+// // // 4
+// // // 7
 
-minilang("3 PUSH PUSH 7 DIV MULT PRINT");
-// 6
+// minilang("3 PUSH PUSH 7 DIV MULT PRINT");
+// // 6
 
 // minilang("4 PUSH PUSH 7 REMAINDER MULT PRINT");
-// // 12
+// // // 12
 
 // minilang("-3 PUSH 5 SUB PRINT");
-// // 8
+// // // 8
 
 // minilang("6 PUSH");
-// (nothing is printed because the `program` argument has no `PRINT` commands)
+// // (nothing is printed because the `program` argument has no `PRINT` commands)
+
+minilang("5 PUSH ADD NOTACOMMAND");
 
 /*
 Notes and Reflection
