@@ -220,3 +220,30 @@ individual cases, since the logic is more self-contained and easier to read. Thi
 opposed to coming up with a general solution to reduce code. My code "smells" bad you could say, but the code written by LS does not.
 
 */
+
+// Others students solution
+
+function minilang(program) {
+  let stack = [];
+  let reg = 0;
+
+  const OPERATION_OF = {
+    'PUSH'     : () => stack.push(reg),
+    'ADD'      : () => reg += stack.pop(),
+    'SUB'      : () => reg -= stack.pop(),
+    'MULT'     : () => reg *= stack.pop(),
+    'DIV'      : () => reg = Math.floor(reg / stack.pop()),
+    'REMAINDER': () => reg = reg % stack.pop(),
+    'POP'      : () => reg = stack.pop(),
+    'PRINT'    : () => console.log(reg),
+  };
+  const LOAD = (n) => reg = n;
+
+  program.split(' ').forEach((token) => {
+    (OPERATION_OF[token] || LOAD)(Number(token));
+  });
+}
+
+// The above is interesting... Kind of a like a class. But you basically call the command using the dictionary. This is super explicit,
+// and saves space compared to the switch statement. I also did not know you could do || on a function and add it to the 
+// variable being called... wtf. Super creative. 
