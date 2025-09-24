@@ -5,12 +5,6 @@ should still be included in the return value; they just don't count when togglin
 
 // Example:
 
-console.log(staggeredCase("I Love Launch School!") === "I lOvE lAuNcH sChOoL!");
-console.log(staggeredCase("ALL CAPS") === "AlL cApS");
-console.log(
-  staggeredCase("ignore 77 the 444 numbers") === "IgNoRe 77 ThE 444 nUmBeRs"
-);
-
 /*
 PEDAC
 
@@ -64,15 +58,18 @@ const staggeredCase = (string) => {
   for (let i = 0; i < string.length; i++) {
     if (
       ALPHABETIC_CHARACTERS.includes(string[i].toLowerCase()) &&
-      lastLetterCapitalized
+      !lastLetterCapitalized
     ) {
       output += string[i].toUpperCase();
-    } else {
+      lastLetterCapitalized = true;
+    } else if (ALPHABETIC_CHARACTERS.includes(string[i].toLowerCase())) {
       output += string[i].toLowerCase();
+      lastLetterCapitalized = false;
+    } else {
+      output += string[i];
     }
   }
-
-  return output
+  return output;
 };
 
 console.log(staggeredCase("I Love Launch School!") === "I lOvE lAuNcH sChOoL!");
