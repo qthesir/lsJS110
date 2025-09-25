@@ -52,23 +52,48 @@ Algorithm
 
 ALPHABETIC_CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
 
-const staggeredCase = (string) => {
+const staggeredCase = (string, countNonAlphabeticCharacters = false) => {
   let output = "";
   let lastLetterCapitalized = false;
-  for (let i = 0; i < string.length; i++) {
-    if (
-      ALPHABETIC_CHARACTERS.includes(string[i].toLowerCase()) &&
-      !lastLetterCapitalized
-    ) {
-      output += string[i].toUpperCase();
-      lastLetterCapitalized = true;
-    } else if (ALPHABETIC_CHARACTERS.includes(string[i].toLowerCase())) {
-      output += string[i].toLowerCase();
-      lastLetterCapitalized = false;
-    } else {
-      output += string[i];
+
+  if (countNonAlphabeticCharacters) {
+    output = string.split("").reduce((acc, cv, index) => {
+      index % 2 === 0 ? (acc += cv.toUpperCase()) : (acc += cv.toLowerCase());
+      return acc;
+    }, "");
+  } else {
+    for (let i = 0; i < string.length; i++) {
+      if (
+        ALPHABETIC_CHARACTERS.includes(string[i].toLowerCase()) &&
+        !lastLetterCapitalized
+      ) {
+        output += string[i].toUpperCase();
+        lastLetterCapitalized = true;
+      } else if (ALPHABETIC_CHARACTERS.includes(string[i].toLowerCase())) {
+        output += string[i].toLowerCase();
+        lastLetterCapitalized = false;
+      } else {
+        output += string[i];
+      }
     }
   }
+  return output;
+};
+
+const staggeredCase2 = (string, countNonAlpha = false) => {
+  let output;
+  let needUpper = false;
+  output = [...string]
+    .map((char) => {
+      char = char.toLowerCase();
+      if (!(char <= "z" && char >= "a") && !countNonAlpha) {
+        return char;
+      }
+      needUpper = !needUpper;
+      return needUpper ? char.toUpperCase() : char.toLowerCase();
+    })
+    .join("");
+
   return output;
 };
 
@@ -77,3 +102,21 @@ console.log(staggeredCase("ALL CAPS") === "AlL cApS");
 console.log(
   staggeredCase("ignore 77 the 444 numbers") === "IgNoRe 77 ThE 444 nUmBeRs"
 );
+
+console.log(staggeredCase("I Love Launch School!", true)); // "I LoVe lAuNcH ScHoOl!"
+console.log(staggeredCase("ALL_CAPS", true)); // "AlL_CaPs"
+console.log(staggeredCase("ignore 77 the 4444 numbers", true)); // "IgNoRe 77 ThE 4444 nUmBeRs"
+
+console.log(
+  staggeredCase2("I Love Launch School!") === "I lOvE lAuNcH sChOoL!"
+);
+console.log(staggeredCase2("ALL CAPS") === "AlL cApS");
+console.log(
+  staggeredCase2("ignore 77 the 444 numbers") === "IgNoRe 77 ThE 444 nUmBeRs"
+);
+
+console.log(staggeredCase2("ALL CAPS"));
+
+console.log(staggeredCase2("I Love Launch School!", true)); // "I LoVe lAuNcH ScHoOl!"
+console.log(staggeredCase2("ALL_CAPS", true)); // "AlL_CaPs"
+console.log(staggeredCase2("ignore 77 the 4444 numbers", true)); // "IgNoRe 77 ThE 4444 nUmBeRs"
