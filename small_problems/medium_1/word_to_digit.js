@@ -112,9 +112,11 @@ const wordToDigit = (sentence) => {
   return sentence
     .split(" ")
     .map((word) => {
-      let filteredWord = filterWord(word.toLowerCase);
+      let filteredWord = filterWord(word).toLowerCase();
       return NUMBER_WORD_TO_DIGIT[filteredWord]
-        ? word.replace(filteredWord, String(NUMBER_WORD_TO_DIGIT[filteredWord]))
+        ? word
+            .toLowerCase()
+            .replace(filteredWord, String(NUMBER_WORD_TO_DIGIT[filteredWord]))
         : word;
     })
     .join(" ");
@@ -159,5 +161,8 @@ those letters with the right value. So I have the infrastructure to do this.
 
 In the node, I could simply do 'five.'.replace('five', '5') and that would effectively replace its value. But how is replace working 
 under the hood? I would like to write my own to see. 
+
+In future problems, I should consider using regex to aid in string replacement problems. It seems to be really quite useful. I will
+try to use it in any other problems of this kind that I encounter. 
 
 */
