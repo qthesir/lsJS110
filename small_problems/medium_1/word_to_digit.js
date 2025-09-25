@@ -70,7 +70,17 @@ Helper: Check to see if the word is a number word (this could simply be accompli
 - Check to see if the word is in the object. If it is, return its digit. If not, return undefined.
 
 Replace word:
-- Accept 
+- Accept the word to replace and its replacement value as an argument
+- Split the word into an array of characters
+- Set the output equal to the current array
+- For each character
+  - Initiliaze and declare a variable "wordToCheck"
+  - For the remaining indices in the string
+    - add the characters to the "wordToCheck"
+    - Check to see if "wordToCheck" is equal to the word to replace
+      - If it is, remove the values from the starting index to the ending index and replace them with the replacement value.
+      - Break the loop and continue the first loop
+- Concat output and return to the caller. 
 
 */
 
@@ -102,7 +112,7 @@ const wordToDigit = (sentence) => {
   return sentence
     .split(" ")
     .map((word) => {
-      let filteredWord = filterWord(word);
+      let filteredWord = filterWord(word.toLowerCase);
       return NUMBER_WORD_TO_DIGIT[filteredWord]
         ? word.replace(filteredWord, String(NUMBER_WORD_TO_DIGIT[filteredWord]))
         : word;
@@ -110,11 +120,21 @@ const wordToDigit = (sentence) => {
     .join(" ");
 };
 
+const wordToDigit2 = (sentence) => {
+  Object.entries(NUMBER_WORD_TO_DIGIT).forEach(([numberWord, digit]) => {
+    sentence = sentence.replaceAll(numberWord, digit);
+  });
+  return sentence;
+};
+
 console.log(
   wordToDigit("Please call me at five five five one two three four. Thanks.")
 );
 // "Please call me at 5 5 5 1 2 3 4. Thanks."
 
+console.log(
+  wordToDigit2("Please call me at five five five one two three four. Thanks.")
+);
 /* 
 Ah... critical oversight here. Critically fucked up. I need the punctuation. Damnit! I need to isolate the
 word and only replace that portion of the word. 
