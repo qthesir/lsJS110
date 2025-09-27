@@ -96,7 +96,9 @@ const computeFibonacciRecursive = (depth) => {
 console.log(computeFibonacci(12));
 console.log(computeFibonacciRecursive(7));
 
-const findFibonacciIndexByLength = (numDigits) => {};
+const findFibonacciIndexByLength = (numDigits) => {
+  
+};
 
 // Examples:
 
