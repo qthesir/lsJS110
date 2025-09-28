@@ -58,18 +58,22 @@ Step by Step
 Computing the next fibonacci number
 I could just put the operationIndex and pass it into the fibonacci sequence, to say how many times I want to compute it.
 How do I even describe a recursive algorithm? I feel like I just have to write it. But I will try.
-- If depth = 0, return 1
-- Take the depth of fibonacci as an argument plus the base value
-- Decrement the depth
+- If depth = 1, return 1
+- If depth < 1, return 0
+- Return the value of the previous fibonacci number added to the value of the previous previous fibonacci number 
 - Add the base value to the fibonacci number called on the new depth and the base
+
+Find num digits
+- Convert the value to a string
+- Take the strings lenghh
 
 */
 
 // Code with intent
 
 const computeFibonacci = (depth) => {
-  let currentValue = 1;
-  let previousValue = 0;
+  let currentValue = 1n;
+  let previousValue = 0n;
   let nextValue;
   while (depth > 1) {
     nextValue = currentValue + previousValue;
@@ -81,31 +85,67 @@ const computeFibonacci = (depth) => {
 };
 
 const computeFibonacciRecursive = (depth) => {
-  if (depth === 1) {
-    return 1;
+  if (depth === 1n) {
+    return 1n;
   } else if (depth < 1) {
-    return 0
+    return 0n;
   }
 
   return (
-    computeFibonacciRecursive(depth - 2) +
-    computeFibonacciRecursive(depth - 1)
+    computeFibonacciRecursive(depth - 2n) +
+    computeFibonacciRecursive(depth - 1n)
   );
 };
 
-console.log(computeFibonacci(12));
-console.log(computeFibonacciRecursive(7));
+console.log(computeFibonacciRecursive(3n));
 
 const findFibonacciIndexByLength = (numDigits) => {
-  
+  let operationIndex = 0n;
+  let output = 1n;
+  while (String(output).length < numDigits) {
+    operationIndex += 1n;
+    output = computeFibonacci(operationIndex);
+  }
+  return operationIndex;
 };
 
+const findFibonacciIndexByLengthEfficient = (numDigits) => {
+  let currentValue = 1n;
+  let previousValue = 0n;
+  let nextValue;
+  let numOperations = 1n
+  while (String(currentValue).length < numDigits) {
+    numOperations++;
+    nextValue = currentValue + previousValue;
+    previousValue = currentValue;
+    currentValue = nextValue;
+  }
+  return numOperations;
+};
 // Examples:
 
-// findFibonacciIndexByLength(2n) === 7n; // 1 1 2 3 5 8 13
-// findFibonacciIndexByLength(3n) === 12n; // 1 1 2 3 5 8 13 21 34 55 89 144
-// findFibonacciIndexByLength(10n) === 45n;
-// findFibonacciIndexByLength(16n) === 74n;
-// findFibonacciIndexByLength(100n) === 476n;
-// findFibonacciIndexByLength(1000n) === 4782n;
-// findFibonacciIndexByLength(10000n) === 47847n;
+// console.log(findFibonacciIndexByLength(2n));
+// console.log(findFibonacciIndexByLength(2n) === 7n); // 1 1 2 3 5 8 13
+// console.log(findFibonacciIndexByLength(3n) === 12n); // 1 1 2 3 5 8 13 21 34 55 89 144
+// console.log(findFibonacciIndexByLength(10n) === 45n);
+// console.log(findFibonacciIndexByLength(16n) === 74n);
+// console.log(findFibonacciIndexByLength(100n) === 476n);
+// console.log(findFibonacciIndexByLength(1000n) === 4782n);
+// console.log(findFibonacciIndexByLength(10000n) === 47847n);
+
+console.log(findFibonacciIndexByLengthEfficient(2n));
+console.log(findFibonacciIndexByLengthEfficient(2n) === 7n); // 1 1 2 3 5 8 13
+console.log(findFibonacciIndexByLengthEfficient(3n) === 12n); // 1 1 2 3 5 8 13 21 34 55 89 144
+console.log(findFibonacciIndexByLengthEfficient(10n) === 45n);
+console.log(findFibonacciIndexByLengthEfficient(16n) === 74n);
+console.log(findFibonacciIndexByLengthEfficient(100n) === 476n);
+console.log(findFibonacciIndexByLengthEfficient(1000n) === 4782n);
+console.log(findFibonacciIndexByLengthEfficient(10000n) === 47847n);
+
+/*
+Seems like there is some redundant functionality in my code here. Instead of calling the computeFibonacci for every operation increment, basically requiring
+it to start the calculation over again, I can call it once, and have it return the number of operations performed once the value reaches the number of 
+digits specified in the argument.
+
+Yeah, wow, that was blazing fast. Like an order of magnitude faster. Because now I'm not 
+*/
