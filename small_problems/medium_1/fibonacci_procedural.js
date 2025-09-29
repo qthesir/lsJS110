@@ -54,10 +54,10 @@ Step by step
 // Code with intent
 
 const fibonacci = (n) => {
-  let previousValue = 0;
+  let previousValue = 1;
   let currentValue = 1;
-  let fibonacci = previousValue + currentValue;
-  let index = 1;
+  let fibonacci = 1;
+  let index = 2;
   while (index < n) {
     fibonacci = previousValue + currentValue;
     previousValue = currentValue;
