@@ -54,23 +54,19 @@ Step by step
 // Code with intent
 
 const fibonacci = (n) => {
-  let previousValue = 1;
-  let currentValue = 1;
-  let fibonacci = 1;
+  let [firstValue, secondValue] = [1, 1];
   let index = 2;
   while (index < n) {
-    fibonacci = previousValue + currentValue;
-    previousValue = currentValue;
-    currentValue = fibonacci;
+    [firstValue, secondValue] = [secondValue, firstValue + secondValue];
     index++;
   }
 
-  return fibonacci;
+  return secondValue;
 };
 
 // Examples
 
-console.log(fibonacci(7));
+console.log(fibonacci(2));
 console.log(fibonacci(20)); // 6765
 console.log(fibonacci(50)); // 12586269025
 console.log(fibonacci(75)); // 2111485077978050
