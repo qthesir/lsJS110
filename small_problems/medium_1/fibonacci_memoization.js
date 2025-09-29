@@ -43,17 +43,27 @@ fibonacci(n-1) + fibonacci(n-2)
 
 */
 
-let memo = {};
-
 const fibonacci = (nth) => {
+  invocations += 1;
   if (nth <= 2) return 1;
   if (!memo[nth]) memo[nth] = fibonacci(nth - 1) + fibonacci(nth - 2);
   return memo[nth];
 };
 
+const fibonacciEfficient = (nth) => {
+  invocations += 1;
+  if (!memo[nth - 1]) memo[nth - 1] = fibonacciEfficient(nth - 1);
+  return memo[nth - 1] + memo[nth - 2];
+};
+
 // Examples
-console.log(fibonacci(7));
-console.log(fibonacci(20)); // 6765
-console.log(fibonacci(50)); // 12586269025
-console.log(fibonacci(75)); // 2111485077978050
+
+let invocations = 0;
+let memo = { 1: 1, 2: 1 };
+console.log(fibonacciEfficient(7), invocations);
+invocations = 0;
+memo = { 1: 1, 2: 1 };
+console.log(fibonacci(7), invocations); // 6765
+// console.log(fibonacci(50)); // 12586269025
+// console.log(fibonacci(75)); // 2111485077978050
 // console.log(fibonacci(10000));
