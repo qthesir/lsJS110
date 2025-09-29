@@ -64,3 +64,33 @@ console.log(fibonacci(4)); // 3
 console.log(fibonacci(5)); // 5
 console.log(fibonacci(12)); // 144
 console.log(fibonacci(20)); // 6765
+
+// Testing tail recursion
+
+/*
+Ok, so we want to start with the factorial sequence. 
+*/
+
+const factorial = (n, a = 1) => {
+  if (n === 1) return a;
+  return factorial(n - 1, a * n);
+};
+
+console.log(factorial(5));
+
+const fibonacciEfficient = (n, a = 0n, b = 1n) => {
+  if (n === 0n) return a;
+  if (n === 1n) return b;
+
+  return fibonacciEfficient(n - 1n, b, a + b);
+};
+
+console.log(fibonacciEfficient(500n));
+
+/*
+In both cases, in tail recursion, there is an accumulated value that is passed down to the next recursive call.
+When this happens, the execution is similar to a while loop. Its very fast, very efficient. Then, instead
+of returning a base case, and going up from there, the accumulated value is returned at the end of the sequence.
+
+This is a neat trick. 
+*/
