@@ -107,11 +107,25 @@ const letterPercentages = (string) => {
   return formatOutput(stringBreakdown, string.length);
 };
 
-console.log(letterPercentages("abCdef 123"));
+const letterPercentagesRegex = (string) => {
+  const percentage = (regex) => {
+    let totalChars = string.length;
+    let matchingChars = string.match(regex) || [];
+    return String(((matchingChars.length / totalChars) * 100).toFixed(2));
+  };
+
+  return {
+    lowercase: percentage(/[a-z]/g),
+    uppercase: percentage(/[A-Z]/g),
+    neither: percentage(/[^a-z]/gi)
+  };
+};
+
+console.log(letterPercentagesRegex("abCdef 123"));
 // { lowercase: "50.00", uppercase: "10.00", neither: "40.00" }
 
-console.log(letterPercentages("AbCd +Ef"));
+console.log(letterPercentagesRegex("AbCd +Ef"));
 // { lowercase: "37.50", uppercase: "37.50", neither: "25.00" }
 
-console.log(letterPercentages("123"));
+console.log(letterPercentagesRegex("123"));
 // { lowercase: "0.00", uppercase: "0.00", neither: "100.00" }
