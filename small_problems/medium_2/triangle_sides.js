@@ -75,10 +75,10 @@ index 1 and 2
 
 // Code with intent
 
-const isValidTriangle = (sidesArray) => {
-  if (sidesArray.some((side) => side <= 0)) return false;
-  sidesArray.sort((a, b) => b - a);
-  if (sidesArray[0] >= sidesArray[1] + sidesArray[2]) return false;
+const isValidTriangle = (sides) => {
+  if (sides.some((side) => side <= 0)) return false;
+  let sortedSides = [...sides].sort((a, b) => b - a);
+  if (sortedSides[0] >= sortedSides[1] + sortedSides[2]) return false;
   return true;
 };
 
