@@ -96,8 +96,11 @@ Optional helper if I want to abstract the padding, since it is used twice
 
 const getLayer = (numLayers, numStars) => {
   let padding = " ".repeat((numLayers - numStars) / 2);
-  let stars = "*".repeat(numStars);
-  return padding + stars + padding;
+  if (numStars === 1) {
+    return padding + "*";
+  }
+  let hollowSpace = " ".repeat(numStars - 2);
+  return padding + "*" + hollowSpace + "*";
 };
 
 const getStars = (numLayers, currentLayer) => {
