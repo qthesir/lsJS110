@@ -10,12 +10,20 @@ Completing a task for us simply means deleting the string from the array of task
 Experimenting with our code reveals that it doesn't work exactly as we expected. 
 Find the problem and fix it.
 */
-let todos = ['wash car', 'exercise', 'buy groceries', 'balance budget',
-             'call plumber', 'feed fido', 'get gas',  'organize closet'];
+let todos = [
+  "wash car",
+  "exercise",
+  "buy groceries",
+  "balance budget",
+  "call plumber",
+  "feed fido",
+  "get gas",
+  "organize closet",
+];
 
 function addTask(task) {
   if (todos.includes(task)) {
-    console.log('That task is already on the list.');
+    console.log("That task is already on the list.");
   } else {
     todos.push(task);
   }
@@ -25,22 +33,20 @@ function completeTasks(n = 1) {
   let tasksComplete = 0;
 
   while (todos.length > 0 && tasksComplete < n) {
-    console.log(`${todos[0]} complete!`);
-    todos.shift();
+    console.log(`${todos.shift()} complete!`);
     tasksComplete++;
   }
 
   if (todos.length === 0) {
-    console.log('All tasks complete!');
+    console.log("All tasks complete!");
   } else {
     console.log(`${tasksComplete} tasks completed; ${todos.length} remaining.`);
   }
 }
 
 function displayTaskList() {
-
   console.log(`ToDo list (${todos.length} tasks):`);
-  console.log('---------------------');
+  console.log("---------------------");
 
   for (let idx = 0; idx < todos.length; idx++) {
     console.log(`-- ${todos[idx]}`);
@@ -49,9 +55,9 @@ function displayTaskList() {
 
 // Utilizing our task manager
 
-addTask('oil change');
-addTask('dentist');
-addTask('homework');
+addTask("oil change");
+addTask("dentist");
+addTask("homework");
 
 completeTasks(3);
 displayTaskList();
@@ -81,4 +87,8 @@ The fix here is simple: Use the built in array method "splice" to remove the ite
 at index 0 instead of delete. Splice both deletes the element, and shifts the array
 elements back an index to fill the empty item. 
 
+I should mentally be reminding myself to determine whether the approach to code
+I'm taking is declarative or imperative, and when it makes more sense. 
+
+When should I take a declarative approach? When should I take an imperative approach? 
 */
