@@ -53,9 +53,7 @@ const RESERVED_KEYWORDS = [
 console.log(RESERVED_KEYWORDS.indexOf("switch"));
 function isReserved(name) {
   return RESERVED_KEYWORDS.some((reserved) => {
-    if (name === reserved) {
-      return true;
-    }
+    return name === reserved;
   });
 }
 
