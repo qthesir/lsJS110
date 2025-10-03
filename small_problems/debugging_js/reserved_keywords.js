@@ -99,4 +99,9 @@ as .forEach always returns undefined. Therefore, the function will complete the
 Here are a couple options that would resolve the bug and give the function the intended
 return values:
 
+... Reading a couple comments by other LS students, there is an interesting 
+object type called a Set, which allows you to identify unique values inside of the
+set with a constant time operation, instead of a linear time one. I suppose, with a 
+set, you do not have to iterate through every value, since it knows for sure that
+every value is unique. Interesting. Seems useful. 
 */
