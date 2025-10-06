@@ -76,25 +76,15 @@ Helper: allUniqueDigits
 const LARGEST_FEATURED_NUMBER = 9876543201;
 
 const allUniqueDigits = (currentMultipleOfSeven) => {
-  let numArr = String(currentMultipleOfSeven).split("");
-  for (let i = 0; i < numArr.length; i++) {
-    let allOtherDigits = [...numArr];
-    let currentDigit = allOtherDigits.splice(i, 1)[0];
-    if (allOtherDigits.includes(currentDigit)) return false;
-  }
+  let numberArr = String(currentMultipleOfSeven).split("");
+  let numberSet = new Set(numberArr);
 
-  return true;
+  return numberArr.length === numberSet.size;
 };
 
-const isFeaturedNumber = (currentMultipleOfSeven) => {
-  return (
-    currentMultipleOfSeven % 2 !== 0 && allUniqueDigits(currentMultipleOfSeven)
-  );
-};
-
-const determineNextMultipleOfSeven = (int) => {
+const determineNextOddMultipleOfSeven = (int) => {
   int++;
-  while (int % 7 !== 0) {
+  while (int % 7 !== 0 || int % 2 === 0) {
     int++;
   }
   return int;
@@ -104,9 +94,9 @@ const featured = (int) => {
   if (int >= LARGEST_FEATURED_NUMBER) {
     return "There is no possible number that fulfills those requirements.";
   }
-  let currentMultipleOfSeven = determineNextMultipleOfSeven(int);
-  while (!isFeaturedNumber(currentMultipleOfSeven)) {
-    currentMultipleOfSeven += 7;
+  let currentMultipleOfSeven = determineNextOddMultipleOfSeven(int);
+  while (!allUniqueDigits(currentMultipleOfSeven)) {
+    currentMultipleOfSeven += 14;
   }
   return currentMultipleOfSeven;
 };
@@ -135,4 +125,9 @@ iteration and taking the current digit out. In terms of memory, this is far more
 efficient, because its only storing the current digit, instead of the entire 
 array every single time. You can also reference the digit by name, which makes 
 things a little easier to read IMO. 
+
+Another interesting solution by an LS student used a set, which creates a set of 
+unique values from the number string split into an array. They then compare the 
+set with the original Array, which indicates whether all the numbers were unique or 
+not. 
 */
