@@ -67,15 +67,15 @@ Helper: Create Top Triangle
 
 const getBottomRows = (N) => {
   let bottomRows = [];
-  let firstStarIndex = Math.floor(N / 2) - 1;
-  let secondStarIndex = Math.ceil(N / 2) - 1;
-  let thirdStarIndex = Math.ceil(N / 2);
+  let middleStarIndex = Math.floor(N / 2);
+  let firstStarIndex = middleStarIndex - 1;
+  let thirdStarIndex = middleStarIndex + 1;
 
   while (thirdStarIndex < N) {
     let newRow = Array.from({ length: N }, (_, index) => {
       if (
         firstStarIndex === index ||
-        secondStarIndex === index ||
+        middleStarIndex === index ||
         thirdStarIndex === index
       ) {
         return "*";
