@@ -61,15 +61,31 @@ Step by step
 // Code with intent
 
 const bubbleSort = (array) => {
-  let swapsRemaining = true;
-  while (swapsRemaining) {
-    swapsRemaining = false;
-    for (let i = 1; i < array.length; i++) {
+  let swapped = true;
+  let unsortedEnd = array.length;
+  while (swapped) {
+    swapped = false;
+    for (let i = 1; i < unsortedEnd; i++) {
       if (array[i - 1] > array[i]) {
         [array[i - 1], array[i]] = [array[i], array[i - 1]];
-        swapsRemaining = true;
+        swapped = true;
       }
     }
+    unsortedEnd = unsortedEnd - 1;
+  }
+};
+
+const bubbleSortOptimized = (array) => {
+  let n = array.length;
+  while (n > 1) {
+    let lastSwapIndex = 0;
+    for (let i = 1; i < n; i++) {
+      if (array[i - 1] > array[i]) {
+        [array[i - 1], array[i]] = [array[i], array[i - 1]];
+        lastSwapIndex = i;
+      }
+    }
+    n = lastSwapIndex;
   }
 };
 
@@ -87,6 +103,21 @@ let array3 = ["Sue", "Pete", "Alice", "Tyler", "Rachel", "Kim", "Bonnie"];
 bubbleSort(array3);
 console.log(array3); // ["Alice", "Bonnie", "Kim", "Pete", "Rachel", "Sue", "Tyler"]
 
+let array4 = [5, 3];
+bubbleSortOptimized(array4);
+console.log(array4); // [3, 5]
+
+let array5 = [6, 2, 7, 1, 4];
+bubbleSortOptimized(array5);
+console.log(array5); // [1, 2, 4, 6, 7]
+
+let array6 = ["Sue", "Pete", "Alice", "Tyler", "Rachel", "Kim", "Bonnie"];
+bubbleSortOptimized(array6);
+console.log(array6); // ["Alice", "Bonnie", "Kim", "Pete", "Rachel", "Sue", "Tyler"]
+
 /*
-That was EASY!
+That was EASY! Holy moly man. I am definitely getting better at this.
+
+Oh, and... I really like the LS solution here. It uses while true, and then uses a break statement if the swapped variable is
+still equal to false after the loop. This makes it more readable. Reads more like regular english. 
 */
