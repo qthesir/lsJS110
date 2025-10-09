@@ -60,9 +60,8 @@ let offeredClasses = {
 
 function getCompatibleEvents(classes, calendar) {
   function isAvailable(date) {
-    let dateStr = toString(date);
-    console.log(dateStr);
-    return calendar[dateStr]?.length === 0;
+    let dateStr = toString2(date);
+    return !calendar[dateStr] || calendar[dateStr].length === 0;
   }
 
   let compatibleClasses = [];
@@ -92,7 +91,20 @@ in time rather than the actual year. The second issue is the logic in the isAvai
 true when the calendar object returns undefined, which is causing classes where it cant find the date to 
 be added to the compatibleClasses array. 
 
-The fix here was a bit trickier than earlier exercises. To fix the date issue, you can use 1 of two approaches: Adjust the 
+The fix here was a bit trickier than earlier exercises. To fix the date issue, you can use one of two approaches: Adjust the 
 month to the correct day, change .getDay() (this is day of the week) to .getDate(), and pad the zeros for the month 
-and the date.
+and the date (the return values do not automatically pad zeros for months and dates less than 10). Alternatively, you
+could use the method .toISOString() on the javaScript date object, and get the values from index 0 to 10. This would
+produce the format necessary to properly reference the classes object. 
+
+In the "isAvailable" function, the fix is simply to remove the bang, and check to see if the length of the return value
+of the object reference is equal to 0, like so: calendar[dateStr]?.length === 0;. By using the ?, the optional chaining
+operator, calling .length will return undefined if the value returned by calendar[dateStr] is undefined instead of 
+throwing an error. That way, the value returned will be false if the length of the array is 0, or if there is
+activities on the calendar for those dates. 
+
+Ah, this was faulty logic - in actuality, the isAvailable function was working as intended before. The only reason my 
+adjustment worked here is because the two valid classes, Mikes Hikes and PowerBoating 101, either fell on dates that were
+empty, or were on the weekend. Had there been another class on a date that was not in the schedule at all, the object
+property lookup would have returned undefined, which would have evaluated to false - not the intent. 
 */
