@@ -88,4 +88,9 @@ console.log(isPrime(23_297_061) === false); // true
 
 /*
 This is kind of a strange pattern... You can just divide by 3 or 2 and it dictates everything? Huh....
+
+Nope. My original intuition was correct... You need to check all the numbers, but there is a small optimization you can do 
+to only check up to the square root. But, basically, you can compose non-prime numbers by any prime number, and that number (say
+11 * 23) will only by divisible by the lowest of those two numbers. You cannot, for example, divide 11 x 23 = 253 by anything lower
+than 11.
 */
