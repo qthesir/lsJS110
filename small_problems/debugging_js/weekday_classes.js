@@ -107,4 +107,33 @@ Ah, this was faulty logic - in actuality, the isAvailable function was working a
 adjustment worked here is because the two valid classes, Mikes Hikes and PowerBoating 101, either fell on dates that were
 empty, or were on the weekend. Had there been another class on a date that was not in the schedule at all, the object
 property lookup would have returned undefined, which would have evaluated to false - not the intent. 
+
+The reason the code is not properly filtering out the offered classes is because of the toString() function. When
+get compatible events is called, the function iterates over the individual classes offered, first converting the dates to the
+date format so that checking if its in the past and checking if its a weekday are easier to handle. In the for loop, the 
+function first checks if the class date is in the past. If its in the past, the return statement skips to the top of the 
+function (it does nothing since this is .forEach()). This works as intended, which is why "Back to The Future Movie Night"
+is the only class filtered out correctly. For all the other classes, the second if statement is run. This if statement first
+filters out any class days that are weekends, since those are available by default. For the remainder of the times, 
+the isAvailable callback function is passed to the every method. In order for the every method to return true, and thus for the
+function to add the class to the list, isAvailable must return true for every available time. The is available function
+first turns the date back to a string, in order to perform an object property reference of the date as the object property 
+is the date in string format. If the date is not an object key, the object property reference returns undefined, which is
+falsy. The bang operator makes it truthy. Thus, if the object property reference returns undefined (when the date cannot
+be found in the calendar), the function will return true. If the property does return a value, the || operator causes it
+to short circuit to the second operation, which checks to see if the calendar is empty for that date. If it is empty,
+then the isAvailable function will also return true. If it is not empty, then it returns false.
+
+However, the toString(date) function is not returning the intended string value. Thus, the !calendar[dateStr] object
+property reference is always going to return undefined, and thus, isAvailable will always return true. This is 
+why the list is not filtering any classes except for back to the future. in the toString function, there are 
+issues with the year, month, and day. .getYear returns the years since 1900, not the full year. .getMonth returns
+an index of the month, and thus needs to add 1. .getDay returns the day of the week, not the day of the month. So you 
+end up with a string format that does not match the format the function expects.
+
+To fix the date issue, you can use one of two approaches: Adjust the 
+month to the correct day, change .getDay() (this is day of the week) to .getDate(), and pad the zeros for the month 
+and the date (the return values do not automatically pad zeros for months and dates less than 10). Alternatively, you
+could use the method .toISOString() on the javaScript date object, and get the values from index 0 to 10. This would
+produce the format necessary to properly reference the classes object. 
 */
