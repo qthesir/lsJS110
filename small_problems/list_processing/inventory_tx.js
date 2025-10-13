@@ -65,8 +65,10 @@ let transactions = [
   { id: 103, movement: "out", quantity: 15 },
 ];
 
-console.log(transactionsFor(101, transactions));
+// console.log(transactionsFor(101, transactions));
 // returns
 // [ { id: 101, movement: "in",  quantity:  5 },
 //   { id: 101, movement: "in",  quantity: 12 },
 //   { id: 101, movement: "out", quantity: 18 }, ]
+
+module.exports = { transactionsFor };
