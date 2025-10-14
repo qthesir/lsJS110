@@ -12,6 +12,7 @@ Requirements
 - If there are multiple pairs of numbers that are equally close, choose the first 
 pair that appear in the array 
 - The difference is based on the absolute value of the difference 
+- The numbers should be in the order in which they appear in the array
 
 Data Structures
 Input: Array of numbers
