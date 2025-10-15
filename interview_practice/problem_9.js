@@ -108,7 +108,7 @@ const countSubstrings3 = (string, substring) => {
   return substringOccurences?.length || 0;
 };
 
-const countSubstrings = (string, substring) => {
+const countSubstrings5 = (string, substring) => {
   let noSubstringFound = true;
   let strArray = string.split("");
   let substringCount = 0;
@@ -136,6 +136,25 @@ const countSubstrings = (string, substring) => {
   } while (!noSubstringFound);
 
   return substringCount;
+};
+
+const countSubstrings6 = (str, sub) => {
+  let substringCount = str.split(sub).length - 1;
+  console.log(str.split(sub));
+  console.log(substringCount);
+  return substringCount;
+};
+
+const countSubstrings = (str, sub) => {
+  let m = sub.length;
+  let subCount = 0;
+  for (let i = 0; i <= str.length - m; i++) {
+    if (str.slice(i, i + m) === sub) {
+      subCount += 1;
+      i += m - 1;
+    }
+  }
+  return subCount;
 };
 
 const p = console.log;
