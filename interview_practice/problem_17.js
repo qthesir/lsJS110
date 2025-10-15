@@ -64,7 +64,8 @@ Helper: isPrime
 
 const isPrime = (number) => {
   let divisor = 2;
-  while (divisor < number) {
+  let maxDivisor = Math.sqrt(number);
+  while (divisor <= maxDivisor) {
     if (number % divisor === 0) {
       return false;
     }
@@ -90,3 +91,14 @@ p(nearestPrimeSum([2, 12, 8, 4, 6]) === 5); // Nearest prime to 32 is 37
 
 // Nearest prime to 163 is 167
 p(nearestPrimeSum([50, 39, 49, 6, 17, 2]) === 4);
+
+/*
+It is worth noting that prime numbers basically do not have a pattern. you can reduce
+the number of iterations you need to do to check them all, by taking the sqrt of the divisor (if the divisor
+is greater than its own sqrt then it basically is a prime number at that point). But you do need to check
+them all up to that point. I think this is a known problem in mathematics, that prime numbers are effectively 
+unknowable unless computationally checked.
+
+Twin Prime Conjecture, Reinmann hypothesis, Goldbach's conjecture... Now I get what those actually are, and why
+they are problems. Cool.
+*/
