@@ -41,7 +41,7 @@ Step by step
 - While (current index + 4 =< length of the array)
   - Get the product of a subset of the array, from index to index + 4
   - if the current product > largestProduct, set largestProduct to the current product
-- Return the largeset product
+- Return the largestProduct
 
 
 */
