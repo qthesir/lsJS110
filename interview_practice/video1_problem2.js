@@ -45,7 +45,7 @@ Step by step
 
 const scramble = (str1, str2) => {
   let resevoir = str1.split("");
-  for (let char of str2) {
+  for (const char of str2) {
     if (!resevoir.includes(char)) return false;
     resevoir.splice(resevoir.indexOf(char), 1);
   }
