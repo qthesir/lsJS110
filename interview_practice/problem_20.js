@@ -36,6 +36,17 @@ Step by step
 
 */
 
+const whatIsDifferent4 = (array) => {
+  let numberFrequency = array.reduce((acc, cv) => {
+    acc[cv] = (acc[cv] || 0) + 1;
+    return acc;
+  }, {});
+
+  return Number(
+    Object.entries(numberFrequency).find((entry) => entry[1] === 1)[0]
+  );
+};
+
 const whatIsDifferent2 = (array) => {
   let numberFrequency = array.reduce((acc, cv) => {
     acc[cv] = (acc[cv] || 0) + 1;
@@ -43,19 +54,19 @@ const whatIsDifferent2 = (array) => {
   }, {});
 
   return Number(
-    Object.entries(numberFrequency).filter((entry) => entry[1] === 1)[0][0]
+    Object.keys(numberFrequency).find((key) => numberFrequency[key] === 1)
   );
 };
 
-const whatIsDifferent = (array) => {
-  let numberFrequency = array.reduce((acc, cv) => {
-    acc[cv] = (acc[cv] || 0) + 1;
-    return acc;
-  }, {});
+const whatIsDifferent3 = (array) => {
+  return array.find((x) => array.indexOf(x) === array.lastIndexOf(x));
+};
 
-  return Number(
-    Object.keys(numberFrequency).filter((key) => numberFrequency[key] === 1)[0]
-  );
+const whatIsDifferent = (array) => {
+  let freq = new Map();
+  for (const num of array) freq.set(num, (freq.get(num) || 0) + 1);
+  console.log(freq);
+  for (const [num, count] of freq) if (count === 1) return num;
 };
 
 const p = console.log;
@@ -64,3 +75,13 @@ p(whatIsDifferent([7, 7, 7, 7.7, 7]) === 7.7);
 p(whatIsDifferent([1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1]) === 11);
 p(whatIsDifferent([3, 4, 4, 4]) === 3);
 p(whatIsDifferent([4, 4, 4, 3]) === 3);
+
+/*
+If I just want to get 1 value, .find is the better option. Then I'm not have to parse out
+a 1 element array, its just the 1 element it finds first. 
+
+its also called a frequency map. I should keep that in mind. As a naming convention.
+
+Alright, well... I did every single one of those except 1 in under 20 minutes. Pretty
+good. Think I'm, mostly, ready for tomorrow. 
+*/
